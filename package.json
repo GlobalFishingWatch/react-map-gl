@@ -35,6 +35,7 @@
     "bootstrap": "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn && ocular-bootstrap",
     "clean": "ocular-clean",
     "build": "ocular-clean && ocular-build",
+    "build:mapboxgl": "cd ./node_modules/mapbox-gl && yarn install --ignore-scripts && yarn build-prod-min",
     "lint": "ocular-lint",
     "cover": "ocular-test cover",
     "publish-prod": "ocular-publish prod",
@@ -42,7 +43,8 @@
     "test": "flow check && ocular-test",
     "test-fast": "flow check && ocular-test fast",
     "metrics": "ocular-metrics",
-    "update-release-branch": "scripts/update-release-branch.sh"
+    "update-release-branch": "scripts/update-release-branch.sh",
+    "postinstall": "yarn install --ignore-scripts && yarn build && yarn build:mapboxgl"
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",

@@ -16,7 +16,7 @@ const style = {
       id,
       type: 'fill',
       source: id,
-      'source-layer': 'temporalgrid',
+      'source-layer': tileset,
       layout: {
         visibility: 'visible'
       },
@@ -24,16 +24,16 @@ const style = {
         'fill-color': [
           'interpolate',
           ['linear'],
-          ['to-number', ['get', 'value']],
+          ['to-number', ['get', '3']],
           0,
-          '#00ffc3',
+          'rgba(12, 39, 108, 0)',
           1,
           'rgb(12, 39, 108)',
-          91.08999999999999,
+          2,
           '#114685',
-          1351.1349999999998,
+          3,
           '#00ffc3',
-          2611.18,
+          4,
           '#ffffff'
         ]
       }

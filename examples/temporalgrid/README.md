@@ -10,4 +10,3 @@ Here's what you need to do to get fourwings temporal grid runnding in dev in GFW
 - in the mapbox-gl-js folder, run `yarn watch-dev` to run Rollup in watch mode
 - cd to this repo's example folder ie `cd examples/temporalgrid` then link MGL JS source with `yarn link "mapbox-gl"`
 - run `yarn start-local` to run webpack dev server
-

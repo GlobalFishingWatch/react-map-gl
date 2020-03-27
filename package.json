@@ -31,6 +31,7 @@
   "scripts": {
     "typecheck": "flow check",
     "start": "(cd examples/controls && yarn && yarn start-local)",
+    "temporalgrid": "(cd examples/temporalgrid && yarn && yarn start-local)",
     "bootstrap": "PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn && ocular-bootstrap",
     "clean": "ocular-clean",
     "build": "ocular-clean && ocular-build",

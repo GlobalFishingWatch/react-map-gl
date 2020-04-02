@@ -14,24 +14,26 @@ function App() {
     pitch: 0
   });
 
-  const [geomType, setGeomType] = useState('blob');
+  const [geomType, setGeomType] = useState('gridded');
   const params = qs.stringify({
     geomType
   });
   const mapStyle = useMemo(
-    () => ({
-      ...style,
-      sources: {
-        ...style.sources,
-        heatmap: {
-          ...style.sources.heatmap,
-          tiles: [`${style.sources.heatmap.tiles[0]}?${params}`]
-        }
-      }
-    }),
+    () =>
+      style.sources.heatmap
+        ? {
+            ...style,
+            sources: {
+              ...style.sources,
+              heatmap: {
+                ...style.sources.heatmap,
+                tiles: [`${style.sources.heatmap.tiles[0]}?${params}`]
+              }
+            }
+          }
+        : style,
     [params]
   );
-  console.log('App -> mapStyle', mapStyle);
 
   return (
     <Fragment>

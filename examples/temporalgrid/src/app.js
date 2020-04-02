@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import React, {Fragment, useState, useMemo} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
+import qs from 'qs';
 import LayerComposer, {Type} from '@globalfishingwatch/layer-composer';
 import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
 
@@ -41,7 +42,26 @@ function App() {
     [viewport, visible, geomType]
   );
 
-  const [mapStyle] = useLayerComposer(layerComposer, layers);
+  const [style] = useLayerComposer(layerComposer, layers);
+  const params = qs.stringify({
+    geomType
+  });
+  const mapStyle = useMemo(
+    () =>
+      style.sources.heatmap
+        ? {
+            ...style,
+            sources: {
+              ...style.sources,
+              heatmap: {
+                ...style.sources.heatmap,
+                tiles: [`${style.sources.heatmap.tiles[0]}?${params}`]
+              }
+            }
+          }
+        : style,
+    [params]
+  );
   return (
     <Fragment>
       <MapGL

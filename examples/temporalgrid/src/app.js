@@ -2,6 +2,8 @@ import 'babel-polyfill';
 import React, {Fragment, useState, useMemo} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
+// import LayerComposer, {TYPES} from '@globalfishingwatch/layer-composer';
+// import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
 import qs from 'qs';
 import LayerComposer, {Type} from '@globalfishingwatch/layer-composer';
 import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
@@ -9,6 +11,10 @@ import useLayerComposer from '@globalfishingwatch/map-components/components/laye
 const layerComposer = new LayerComposer();
 const id = 'heatmap';
 const tileset = 'carriers_v5';
+
+// const layerComposer = new LayerComposer();
+// const id = 'heatmap';
+// const tileset = 'carriers_v3';
 
 function App() {
   const [viewport, setViewport] = useState({
@@ -60,7 +66,7 @@ function App() {
             }
           }
         : style,
-    [params]
+    []
   );
   return (
     <Fragment>

@@ -4,6 +4,9 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
   },
   "dependencies": {
+    "@globalfishingwatch/layer-composer": "^0.4.2",
+    "@globalfishingwatch/map-components": "^3.0.9",
+    "babel-polyfill": "^6.26.0",
     "qs": "^6.9.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -12,7 +15,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-env": "^7.9.0",
     "@babel/preset-react": "^7.0.0",
     "babel-loader": "^8.0.0",
     "webpack": "^4.20.0",

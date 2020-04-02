@@ -9,13 +9,6 @@ const style = {
     [id]: {
       type: 'temporalgrid',
       tiles: [`${apiTilesUrl}/${tileset}/tile/heatmap/{z}/{x}/{y}`]
-      // aggregationConfig: {
-      //   geomType: 'gridded', // blob | gridded | extruded
-      //   quantizeOffset: 0,
-      //   delta: 10,
-      //   singleFrame: false,
-      //   start: '2019-01-01T00:00:00.000Z'
-      // }
     }
   },
   layers: [
@@ -28,7 +21,21 @@ const style = {
         visibility: 'visible'
       },
       paint: {
-        'fill-color': '#00ffc3'
+        'fill-color': [
+          'interpolate',
+          ['linear'],
+          ['to-number', ['get', 'value']],
+          0,
+          '#00ffc3',
+          1,
+          'rgb(12, 39, 108)',
+          91.08999999999999,
+          '#114685',
+          1351.1349999999998,
+          '#00ffc3',
+          2611.18,
+          '#ffffff'
+        ]
       }
     }
   ]

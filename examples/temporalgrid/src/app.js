@@ -1,9 +1,15 @@
-import React, {Fragment, useMemo, useState} from 'react';
+import 'babel-polyfill';
+import React, {Fragment, useState, useMemo} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
+// import LayerComposer, {TYPES} from '@globalfishingwatch/layer-composer';
+// import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
 import qs from 'qs';
-
 import style from './map-style.js';
+
+// const layerComposer = new LayerComposer();
+// const id = 'heatmap';
+// const tileset = 'carriers_v3';
 
 function App() {
   const [viewport, setViewport] = useState({
@@ -15,6 +21,25 @@ function App() {
   });
 
   const [geomType, setGeomType] = useState('gridded');
+  const [visible, setVisible] = useState(true);
+  // const layers = [
+  //   {id: 'background', type: TYPES.BACKGROUND, color: '#00265c'},
+  //   {
+  //     type: TYPES.HEATMAP,
+  //     id,
+  //     tileset,
+  //     start: '2017-01-01T00:00:00.000Z',
+  //     end: '2018-12-31T00:00:00.000Z',
+  //     zoom: viewport.zoom,
+  //     visible,
+  //     serverSideFilter: undefined,
+  //     updateColorRampOnTimeChange: true,
+  //     singleFrame: true,
+  //     fetchStats: visible,
+  //     colorRampMult: 0.01
+  //   }
+  // ];
+  // const [mapStyle] = useLayerComposer(layerComposer, layers);
   const params = qs.stringify({
     geomType
   });
@@ -32,7 +57,7 @@ function App() {
             }
           }
         : style,
-    [params]
+    []
   );
 
   return (
@@ -52,6 +77,13 @@ function App() {
           }}
         >
           Toggle geomType
+        </button>
+        <button
+          onClick={() => {
+            setVisible(!visible);
+          }}
+        >
+          Toggle visible
         </button>
       </div>
     </Fragment>

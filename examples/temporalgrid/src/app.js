@@ -12,10 +12,6 @@ const layerComposer = new LayerComposer();
 const id = 'heatmap';
 const tileset = 'carriers_v5';
 
-// const layerComposer = new LayerComposer();
-// const id = 'heatmap';
-// const tileset = 'carriers_v3';
-
 function App() {
   const [viewport, setViewport] = useState({
     longitude: -17.3163661,

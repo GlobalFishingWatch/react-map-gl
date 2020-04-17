@@ -7,13 +7,13 @@ import useLayerComposer from '@globalfishingwatch/map-components/components/laye
 
 const layerComposer = new LayerComposer();
 const id = 'heatmap';
-const tileset = 'carriers_v3';
+const tileset = 'carriers_v5';
 
 function App() {
   const [viewport, setViewport] = useState({
-    longitude: 1,
-    latitude: 2,
-    zoom: 2
+    longitude: -17.3163661,
+    latitude: 16.3762596,
+    zoom: 4.6424032
   });
 
   const [geomType, setGeomType] = useState('gridded');
@@ -28,8 +28,9 @@ function App() {
         tileset,
         geomType,
         start: '2017-01-01T00:00:00.000Z',
-        end: '2018-12-31T00:00:00.000Z',
+        end: '2019-12-31T00:00:00.000Z',
         serverSideFilter: undefined,
+        // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
         updateColorRampOnTimeChange: true,
         singleFrame: true,
         colorRampMult: 0.01,

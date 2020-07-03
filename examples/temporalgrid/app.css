@@ -2,10 +2,27 @@ body {
   margin: 0;
   font-family: Helvetica, Arial, sans-serif;
 }
-#map {
+
+#root {
   width: 100vw;
   height: 100vh;
 }
+
+
+.container {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 1px 1px;
+  grid-template-areas: "map" "timebar";
+}
+
+.timebar { grid-area: timebar; }
+
+.map { grid-area: map; height: 100%; }
+
+
 
 .control-buttons {
   position: absolute;

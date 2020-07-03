@@ -4,7 +4,7 @@ This app reproduces GlobalFishingWatch custom [temporalgrid source type](https:/
 
 ### Develop
 
-Here's what you need to do to get fourwings temporal grid runnding in dev in GFW Mapbox GL JS fork:
+Here's what you need to do to get fourwings temporal grid running in dev in GFW Mapbox GL JS fork:
 
 - clone https://github.com/GlobalFishingWatch/mapbox-gl-js/tree/temporalgrid) and `yarn link`
 - in the mapbox-gl-js folder, run `yarn watch-dev` to run Rollup in watch mode

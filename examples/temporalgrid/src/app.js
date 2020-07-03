@@ -2,12 +2,12 @@ import 'babel-polyfill';
 import React, {Fragment, useState, useMemo} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
-import LayerComposer, {Type} from '@globalfishingwatch/layer-composer';
+import LayerComposer, { Generators } from '@globalfishingwatch/layer-composer';
 import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
 
 const layerComposer = new LayerComposer();
 const id = 'heatmap';
-const tileset = 'carriers_v5';
+const tileset = 'carriers_v8';
 
 function App() {
   const [viewport, setViewport] = useState({
@@ -20,10 +20,10 @@ function App() {
   const [visible, setVisible] = useState(true);
   const layers = useMemo(
     () => [
-      {id: 'background', type: Type.Background, color: '#00265c'},
+      {id: 'background', type: Generators.Type.Background, color: '#00265c'},
       {
         id,
-        type: Type.Heatmap,
+        type: Generators.Type.Heatmap,
         visible,
         tileset,
         geomType,

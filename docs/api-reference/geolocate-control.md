@@ -45,13 +45,13 @@ Callback when Geolocation API position updates. It is called with a Geolocation 
 
 ##### `positionOptions` (Object)
 
-- default: `{enableHighAccuracy: false, timeout: 6000}` 
+- default: `{enableHighAccuracy: false, timeout: 6000}`
 
 A Geolocation API [PositionOptions](https://developer.mozilla.org/en-US/docs/Web/API/PositionOptions) object.
 
 ##### `fitBoundsOptions` (Object)
 
-- default: `{maxZoom: 15}` 
+- default: `{maxZoom: 15}`
 
 A [fitBounds](https://docs.mapbox.com/mapbox-gl-js/api/#map#fitbounds) options object to use when the map is panned and zoomed to the user's location. The default is to use a  maxZoom of 15 to limit how far the map will zoom in for very accurate locations.
 
@@ -78,6 +78,12 @@ Check [`locate user`](https://github.com/visgl/react-map-gl/tree/5.2-release/exa
 - default: `Geolocate`
 
 Label applied to the Geolocate control button.
+
+##### `auto` (Boolean)
+
+- default: `false`
+
+Programmatically triggers geolocate when set to true. Initializing the component with true triggers inside `componentDidMount` where as changing to true at a later point triggers inside `componentDidUpdate`. Initally setting as or changing to false has no effect.
 
 
 ## Styling

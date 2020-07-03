@@ -2,10 +2,9 @@ import 'babel-polyfill';
 import React, {Fragment, useState, useMemo} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
-import LayerComposer, { Generators } from '@globalfishingwatch/layer-composer';
-import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
+import { Generators } from '@globalfishingwatch/layer-composer';
+import { useLayerComposer } from '@globalfishingwatch/react-hooks'
 
-const layerComposer = new LayerComposer();
 const id = 'heatmap';
 const tileset = 'carriers_v8';
 
@@ -41,14 +40,23 @@ function App() {
     [viewport, visible, geomType]
   );
 
-  const [mapStyle] = useLayerComposer(layerComposer, layers);
+  const globalConfig = useMemo(
+    () => ({
+      start: '2019-01-01T00:00:00.000Z',
+      end: '2020-01-01T00:00:00.000Z',
+    }),
+    []
+  )
+
+  const { style } = useLayerComposer(layers, globalConfig)
+
   return (
     <Fragment>
       <MapGL
         {...viewport}
         width="100vw"
         height="100vh"
-        mapStyle={mapStyle}
+        mapStyle={style}
         onViewportChange={nextViewport => setViewport(nextViewport)}
       />
       <div className="control-buttons">

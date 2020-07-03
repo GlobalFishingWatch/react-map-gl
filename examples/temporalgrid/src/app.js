@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import React, {Fragment, useState, useMemo} from 'react';
+import React, {Fragment, useState, useMemo, useRef} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 // import LayerComposer, {TYPES} from '@globalfishingwatch/layer-composer';
@@ -52,11 +52,17 @@ function App() {
   // TODO switch between debounced/not debounced time when using animated
   const { style } = useLayerComposer(layers, debouncedTime)
 
+  const mapRef = useRef(null)
+  if (mapRef && mapRef.current) {
+    mapRef.current.getMap().showTileBoundaries = true
+  }
+
   return (
     <div className="container">
       <div className="map">
         <MapGL
           {...viewport}
+          ref={mapRef}
           width="100%"
           height="100%"
           mapStyle={style}

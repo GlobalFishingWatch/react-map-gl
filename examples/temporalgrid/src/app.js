@@ -5,10 +5,9 @@ import MapGL from 'react-map-gl';
 // import LayerComposer, {TYPES} from '@globalfishingwatch/layer-composer';
 // import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
 import qs from 'qs';
-import LayerComposer, { Generators } from '@globalfishingwatch/layer-composer';
-import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
+import { Generators } from '@globalfishingwatch/layer-composer';
+import { useLayerComposer } from '@globalfishingwatch/react-hooks'
 
-const layerComposer = new LayerComposer();
 const id = 'heatmap';
 const tileset = 'carriers_v8';
 
@@ -44,33 +43,23 @@ function App() {
     [viewport, visible, geomType]
   );
 
-  const [style] = useLayerComposer(layerComposer, layers);
-  const params = qs.stringify({
-    geomType
-  });
-  const mapStyle = useMemo(
-    () =>
-      style.sources.heatmap
-        ? {
-            ...style,
-            sources: {
-              ...style.sources,
-              heatmap: {
-                ...style.sources.heatmap,
-                tiles: [`${style.sources.heatmap.tiles[0]}?${params}`]
-              }
-            }
-          }
-        : style,
+  const globalConfig = useMemo(
+    () => ({
+      start: '2019-01-01T00:00:00.000Z',
+      end: '2020-01-01T00:00:00.000Z',
+    }),
     []
-  );
+  )
+
+  const { style } = useLayerComposer(layers, globalConfig)
+
   return (
     <Fragment>
       <MapGL
         {...viewport}
         width="100vw"
         height="100vh"
-        mapStyle={mapStyle}
+        mapStyle={style}
         onViewportChange={nextViewport => setViewport(nextViewport)}
       />
       <div className="control-buttons">

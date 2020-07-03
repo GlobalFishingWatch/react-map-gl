@@ -1,13 +1,15 @@
 import 'babel-polyfill';
-import React, {Fragment, useState, useMemo} from 'react';
+import React, {Fragment, useState, useMemo, useRef} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
-import LayerComposer, { Generators } from '@globalfishingwatch/layer-composer';
-import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
+import { Generators } from '@globalfishingwatch/layer-composer';
+import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
+import TimebarComponent from '@globalfishingwatch/timebar';
 
-const layerComposer = new LayerComposer();
 const id = 'heatmap';
 const tileset = 'carriers_v8';
+
+const NOOP = () => {}
 
 function App() {
   const [viewport, setViewport] = useState({
@@ -15,6 +17,13 @@ function App() {
     latitude: 16.3762596,
     zoom: 4.6424032
   });
+
+  const [time, setTime] = useState({
+    start: '2019-01-01T00:00:00.000Z',
+    end: '2020-01-01T00:00:00.000Z',
+  })
+
+  const debouncedTime = useDebounce(time, 1000)
 
   const [geomType, setGeomType] = useState('gridded');
   const [visible, setVisible] = useState(true);
@@ -27,13 +36,9 @@ function App() {
         visible,
         tileset,
         geomType,
-        start: '2017-01-01T00:00:00.000Z',
-        end: '2019-12-31T00:00:00.000Z',
         serverSideFilter: undefined,
         // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
         updateColorRampOnTimeChange: true,
-        singleFrame: true,
-        colorRampMult: 0.01,
         zoom: viewport.zoom,
         fetchStats: visible
       }
@@ -41,16 +46,40 @@ function App() {
     [viewport, visible, geomType]
   );
 
-  const [mapStyle] = useLayerComposer(layerComposer, layers);
+  // TODO switch between debounced/not debounced time when using animated
+  const { style } = useLayerComposer(layers, debouncedTime)
+
+  const mapRef = useRef(null)
+  if (mapRef && mapRef.current) {
+    mapRef.current.getMap().showTileBoundaries = true
+  }
+
   return (
-    <Fragment>
-      <MapGL
-        {...viewport}
-        width="100vw"
-        height="100vh"
-        mapStyle={mapStyle}
-        onViewportChange={nextViewport => setViewport(nextViewport)}
-      />
+    <div className="container">
+      <div className="map">
+        <MapGL
+          {...viewport}
+          ref={mapRef}
+          width="100%"
+          height="100%"
+          mapStyle={style}
+          onViewportChange={nextViewport => setViewport(nextViewport)}
+        />
+      </div>
+      <div className="timebar">
+        <TimebarComponent
+          start={time.start}
+          end={time.end}
+          absoluteStart={'2012-01-01T00:00:00.000Z'}
+          absoluteEnd={'2020-01-01T00:00:00.000Z'}
+          onChange={(start, end) => {
+            setTime({start,end})
+          }}
+        >
+          {/* hack to shut up timebar warning, will need to fix */}
+          {NOOP}
+        </TimebarComponent>
+      </div>
       <div className="control-buttons">
         Using {geomType} visualization
         <button
@@ -68,7 +97,7 @@ function App() {
           Toggle visible
         </button>
       </div>
-    </Fragment>
+    </div>
   );
 }
 

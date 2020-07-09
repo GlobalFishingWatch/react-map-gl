@@ -1,5 +1,5 @@
 import 'babel-polyfill';
-import React, {Fragment, useState, useMemo, useRef} from 'react';
+import React, {useState, useMemo, useRef} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 import { Generators } from '@globalfishingwatch/layer-composer';
@@ -25,28 +25,36 @@ function App() {
 
   const debouncedTime = useDebounce(time, 1000)
 
-  const [geomType, setGeomType] = useState('gridded');
-  const [visible, setVisible] = useState(true);
+  const [showBasemap, setShowBasemap] = useState(false);
   const layers = useMemo(
-    () => [
-      {id: 'background', type: Generators.Type.Background, color: '#00265c'},
-      {
+    () => {
+      const generators = [
+        {id: 'background', type: Generators.Type.Background, color: '#00265c'}
+      ]
+
+      if (showBasemap) {
+        generators.push({id: 'basemap', type: Generators.Type.Basemap, basemap: 'landmass' })
+      }
+
+      generators.push({
         id,
         type: Generators.Type.Heatmap,
-        visible,
         tileset,
-        geomType,
+        visible: true,
+        geomType: 'gridded',
         serverSideFilter: undefined,
         // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
         updateColorRampOnTimeChange: true,
         zoom: viewport.zoom,
-        fetchStats: visible
-      }
-    ],
-    [viewport, visible, geomType]
+        fetchStats: true
+      })
+
+    return generators
+  },
+    [viewport, showBasemap]
   );
 
-  // TODO switch between debounced/not debounced time when using animated
+  // TODO switch between debounced/immediate/throttled time when using animated
   const { style } = useLayerComposer(layers, debouncedTime)
 
   const mapRef = useRef(null)
@@ -76,26 +84,15 @@ function App() {
             setTime({start,end})
           }}
         >
-          {/* hack to shut up timebar warning, will need to fix */}
+          {/* TODO hack to shut up timebar warning, will need to fix in Timebar */}
           {NOOP}
         </TimebarComponent>
       </div>
       <div className="control-buttons">
-        Using {geomType} visualization
-        <button
-          onClick={() => {
-            setGeomType(geomType === 'gridded' ? 'blob' : 'gridded');
-          }}
-        >
-          Toggle geomType
-        </button>
-        <button
-          onClick={() => {
-            setVisible(!visible);
-          }}
-        >
-          Toggle visible
-        </button>
+        <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
+          setShowBasemap(e.target.checked)
+        }} />
+        <label htmlFor="showBasemap">basemap</label>
       </div>
     </div>
   );

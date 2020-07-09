@@ -8,7 +8,6 @@ body {
   height: 100vh;
 }
 
-
 .container {
   height: 100vh;
   display: grid;
@@ -22,10 +21,9 @@ body {
 
 .map { grid-area: map; height: 100%; }
 
-
-
 .control-buttons {
   position: absolute;
   top: 0;
   left: 0;
+  background: white;
 }

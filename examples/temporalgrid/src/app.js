@@ -1,12 +1,11 @@
 import 'babel-polyfill';
-import React, {useState, useMemo, useRef} from 'react';
+import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 
-const id = 'heatmap';
 const tileset = 'carriers_v8';
 
 const NOOP = () => {}
@@ -25,7 +24,8 @@ function App() {
 
   const debouncedTime = useDebounce(time, 1000)
 
-  const [showBasemap, setShowBasemap] = useState(false);
+  const [showBasemap, setShowBasemap] = useState(false)
+  const [animated, setAnimated] = useState(true)
   const layers = useMemo(
     () => {
       const generators = [
@@ -36,18 +36,27 @@ function App() {
         generators.push({id: 'basemap', type: Generators.Type.Basemap, basemap: 'landmass' })
       }
 
-      generators.push({
-        id,
-        type: Generators.Type.Heatmap,
-        tileset,
-        visible: true,
-        geomType: 'gridded',
-        serverSideFilter: undefined,
-        // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
-        updateColorRampOnTimeChange: true,
-        zoom: viewport.zoom,
-        fetchStats: true
-      })
+      if (animated) {
+        generators.push({
+          id: 'heatmap-animated',
+          type: Generators.Type.HeatmapAnimated,
+          tileset,
+          debug: true,
+        })
+      } else {
+        generators.push({
+          id: 'heatmap',
+          type: Generators.Type.Heatmap,
+          tileset,
+          visible: true,
+          geomType: 'gridded',
+          serverSideFilter: undefined,
+          // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
+          updateColorRampOnTimeChange: true,
+          zoom: viewport.zoom,
+          fetchStats: true
+        })
+      }
 
     return generators
   },
@@ -62,6 +71,12 @@ function App() {
     mapRef.current.getMap().showTileBoundaries = true
   }
 
+  const onMapClick = useCallback((e) => {
+    if (e.features && e.features.length) {
+      console.log(e.features[0])
+    }
+  })
+
   return (
     <div className="container">
       <div className="map">
@@ -72,6 +87,7 @@ function App() {
           height="100%"
           mapStyle={style}
           onViewportChange={nextViewport => setViewport(nextViewport)}
+          onClick={onMapClick}
         />
       </div>
       <div className="timebar">
@@ -93,6 +109,10 @@ function App() {
           setShowBasemap(e.target.checked)
         }} />
         <label htmlFor="showBasemap">basemap</label>
+        <input type="checkbox" id="animated" checked={animated} onChange={(e) => {
+          setAnimated(e.target.checked)
+        }} />
+        <label htmlFor="animated">animated</label>
       </div>
     </div>
   );

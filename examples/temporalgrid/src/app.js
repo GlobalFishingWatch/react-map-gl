@@ -67,7 +67,7 @@ function App() {
   );
 
   // TODO switch between debounced/immediate/throttled time when using animated
-  const { style } = useLayerComposer(layers, debouncedTime)
+  const { style } = useLayerComposer(layers, (animated) ? time: debouncedTime)
 
   const mapRef = useRef(null)
   if (mapRef && mapRef.current) {
@@ -102,6 +102,7 @@ function App() {
           onChange={(start, end) => {
             setTime({start,end})
           }}
+          enablePlayback
         >
           {/* TODO hack to shut up timebar warning, will need to fix in Timebar */}
           {NOOP}

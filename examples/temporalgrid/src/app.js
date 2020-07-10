@@ -1,12 +1,11 @@
 import 'babel-polyfill';
-import React, {Fragment, useState, useMemo, useRef} from 'react';
+import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 
-const id = 'heatmap';
 const tileset = 'carriers_v8';
 
 const NOOP = () => {}
@@ -25,34 +24,58 @@ function App() {
 
   const debouncedTime = useDebounce(time, 1000)
 
-  const [geomType, setGeomType] = useState('gridded');
-  const [visible, setVisible] = useState(true);
+  const [showBasemap, setShowBasemap] = useState(false)
+  const [animated, setAnimated] = useState(true)
   const layers = useMemo(
-    () => [
-      {id: 'background', type: Generators.Type.Background, color: '#00265c'},
-      {
-        id,
-        type: Generators.Type.Heatmap,
-        visible,
-        tileset,
-        geomType,
-        serverSideFilter: undefined,
-        // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
-        updateColorRampOnTimeChange: true,
-        zoom: viewport.zoom,
-        fetchStats: visible
+    () => {
+      const generators = [
+        {id: 'background', type: Generators.Type.Background, color: '#00265c'}
+      ]
+
+      if (showBasemap) {
+        generators.push({id: 'basemap', type: Generators.Type.Basemap, basemap: 'landmass' })
       }
-    ],
-    [viewport, visible, geomType]
+
+      if (animated) {
+        generators.push({
+          id: 'heatmap-animated',
+          type: Generators.Type.HeatmapAnimated,
+          tileset,
+          debug: true,
+        })
+      } else {
+        generators.push({
+          id: 'heatmap',
+          type: Generators.Type.Heatmap,
+          tileset,
+          visible: true,
+          geomType: 'gridded',
+          serverSideFilter: undefined,
+          // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
+          updateColorRampOnTimeChange: true,
+          zoom: viewport.zoom,
+          fetchStats: true
+        })
+      }
+
+    return generators
+  },
+    [viewport, showBasemap]
   );
 
-  // TODO switch between debounced/not debounced time when using animated
-  const { style } = useLayerComposer(layers, debouncedTime)
+  // TODO switch between debounced/immediate/throttled time when using animated
+  const { style } = useLayerComposer(layers, (animated) ? time: debouncedTime)
 
   const mapRef = useRef(null)
   if (mapRef && mapRef.current) {
     mapRef.current.getMap().showTileBoundaries = true
   }
+
+  const onMapClick = useCallback((e) => {
+    if (e.features && e.features.length) {
+      console.log(e.features[0])
+    }
+  })
 
   return (
     <div className="container">
@@ -64,6 +87,7 @@ function App() {
           height="100%"
           mapStyle={style}
           onViewportChange={nextViewport => setViewport(nextViewport)}
+          onClick={onMapClick}
         />
       </div>
       <div className="timebar">
@@ -75,27 +99,21 @@ function App() {
           onChange={(start, end) => {
             setTime({start,end})
           }}
+          enablePlayback
         >
-          {/* hack to shut up timebar warning, will need to fix */}
+          {/* TODO hack to shut up timebar warning, will need to fix in Timebar */}
           {NOOP}
         </TimebarComponent>
       </div>
       <div className="control-buttons">
-        Using {geomType} visualization
-        <button
-          onClick={() => {
-            setGeomType(geomType === 'gridded' ? 'blob' : 'gridded');
-          }}
-        >
-          Toggle geomType
-        </button>
-        <button
-          onClick={() => {
-            setVisible(!visible);
-          }}
-        >
-          Toggle visible
-        </button>
+        <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
+          setShowBasemap(e.target.checked)
+        }} />
+        <label htmlFor="showBasemap">basemap</label>
+        <input type="checkbox" id="animated" checked={animated} onChange={(e) => {
+          setAnimated(e.target.checked)
+        }} />
+        <label htmlFor="animated">animated</label>
       </div>
     </div>
   );

@@ -4,7 +4,7 @@
     "start-local": "webpack-dev-server --env.local --progress --hot --open"
   },
   "dependencies": {
-    "@globalfishingwatch/layer-composer": "2.3.0",
+    "@globalfishingwatch/layer-composer": "2.4.0",
     "@globalfishingwatch/map-components": "^3.1.0",
     "@globalfishingwatch/react-hooks": "2.5.0",
     "babel-polyfill": "^6.26.0",

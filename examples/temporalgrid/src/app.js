@@ -10,6 +10,8 @@ import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 
 const NOOP = () => {}
+// const DEFAULT_TILESET = 'carriers_v8'
+const DEFAULT_TILESET = 'fishing_v3'
 
 function App() {
   const [viewport, setViewport] = useState({
@@ -19,13 +21,13 @@ function App() {
   });
 
   const [time, setTime] = useState({
-    start: '2019-01-01T00:00:00.000Z',
-    end: '2020-01-01T00:00:00.000Z',
+    start: '2012-01-01T00:00:00.000Z',
+    end: '2013-01-01T00:00:00.000Z',
   })
   const debouncedTime = useDebounce(time, 1000)
 
-  const [tileset, setTileset] = useState('carriers_v8')
-  const [currentTileset, setCurrentTileset] = useState('carriers_v8')
+  const [tileset, setTileset] = useState(DEFAULT_TILESET)
+  const [currentTileset, setCurrentTileset] = useState(DEFAULT_TILESET)
 
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
@@ -124,6 +126,7 @@ function App() {
           setDebug(e.target.checked)
         }} />
         <label htmlFor="debug">debug</label>
+        <div>{time.start} - {time.end}</div>
       </div>
     </div>
   );

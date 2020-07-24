@@ -1,6 +1,11 @@
+html {
+  font-size: 10px;
+}
+
 body {
   margin: 0;
   font-family: Helvetica, Arial, sans-serif;
+  overflow: hidden;
 }
 
 #root {
@@ -22,8 +27,10 @@ body {
 .map { grid-area: map; height: 100%; }
 
 .control-buttons {
+  font-size: 1.2rem;
   position: absolute;
   top: 0;
   left: 0;
   background: white;
+  padding: .4rem;
 }

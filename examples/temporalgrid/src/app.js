@@ -9,8 +9,6 @@ import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 
-const tileset = 'carriers_v8';
-
 const NOOP = () => {}
 
 function App() {
@@ -21,13 +19,15 @@ function App() {
   });
 
   const [time, setTime] = useState({
-    start: '2019-01-01T00:00:00.000Z',
-    end: '2020-01-01T00:00:00.000Z',
+    start: '2012-01-01T00:00:00.000Z',
+    end: '2013-01-01T00:00:00.000Z',
   })
-
   const debouncedTime = useDebounce(time, 1000)
 
-  const [showBasemap, setShowBasemap] = useState(false)
+  const [tileset, setTileset] = useState('carriers_v8')
+  const [currentTileset, setCurrentTileset] = useState('carriers_v8')
+
+  const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
   const layers = useMemo(
     () => {
@@ -63,7 +63,7 @@ function App() {
 
     return generators
   },
-    [viewport, showBasemap]
+    [viewport, showBasemap, tileset]
   );
 
   // TODO switch between debounced/immediate/throttled time when using animated
@@ -109,6 +109,8 @@ function App() {
         </TimebarComponent>
       </div>
       <div className="control-buttons">
+        <input type="text" value={currentTileset} onChange={(event) => setCurrentTileset(event.target.value)} />
+        <button onClick={() => setTileset(currentTileset)}>ok</button>
         <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
           setShowBasemap(e.target.checked)
         }} />

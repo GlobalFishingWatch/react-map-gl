@@ -3,7 +3,6 @@
 
 // avoid destructuring for older Node version support
 const resolve = require('path').resolve;
-const webpack = require('webpack');
 
 const BABEL_CONFIG = {
   presets: ['@babel/env', '@babel/react'],
@@ -37,9 +36,6 @@ const config = {
       }
     ]
   },
-
-  // Optional: Enables reading mapbox token from environment variable
-  plugins: [new webpack.EnvironmentPlugin(['MapboxAccessToken'])]
 };
 
 // Enables bundling against src in this repo rather than the installed version

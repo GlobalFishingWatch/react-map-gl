@@ -19,8 +19,8 @@ function App() {
   });
 
   const [time, setTime] = useState({
-    start: '2012-01-01T00:00:00.000Z',
-    end: '2013-01-01T00:00:00.000Z',
+    start: '2019-01-01T00:00:00.000Z',
+    end: '2020-01-01T00:00:00.000Z',
   })
   const debouncedTime = useDebounce(time, 1000)
 
@@ -29,6 +29,7 @@ function App() {
 
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
+  const [debug, setDebug] = useState(true)
   const layers = useMemo(
     () => {
       const generators = [
@@ -44,7 +45,7 @@ function App() {
           id: 'heatmap-animated',
           type: Generators.Type.HeatmapAnimated,
           tileset,
-          debug: true,
+          debug,
         })
       } else {
         generators.push({
@@ -63,7 +64,7 @@ function App() {
 
     return generators
   },
-    [viewport, showBasemap, tileset]
+    [viewport, showBasemap, debug, tileset]
   );
 
   // TODO switch between debounced/immediate/throttled time when using animated
@@ -119,6 +120,10 @@ function App() {
           setAnimated(e.target.checked)
         }} />
         <label htmlFor="animated">animated</label>
+        <input type="checkbox" id="debug" checked={debug} onChange={(e) => {
+          setDebug(e.target.checked)
+        }} />
+        <label htmlFor="debug">debug</label>
       </div>
     </div>
   );

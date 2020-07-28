@@ -34,3 +34,9 @@ body {
   background: white;
   padding: .4rem;
 }
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

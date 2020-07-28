@@ -1,6 +1,6 @@
 # Adding Custom Data
 
-## Native Mapbox Layers
+<!-- ## Native Mapbox Layers
 
 You can inject data and mapbox native layers by modifying the map style object:
 
@@ -91,4 +91,4 @@ import cities from 'example-cities';
 </MapGL>
 ```
 
-Want to create and share your own overlay? Check the [examples/additional-overlays](https://github.com/visgl/react-map-gl/tree/5.2-release/examples/additional-overlays) folder for examples.
+Want to create and share your own overlay? Check the [examples/additional-overlays](https://github.com/visgl/react-map-gl/tree/5.2-release/examples/additional-overlays) folder for examples. -->

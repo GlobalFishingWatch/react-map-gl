@@ -4,7 +4,7 @@ import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 // import LayerComposer, {TYPES} from '@globalfishingwatch/layer-composer';
 // import useLayerComposer from '@globalfishingwatch/map-components/components/layer-composer-hook';
-import qs from 'qs';
+import { DateTime } from 'luxon'
 import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
@@ -21,8 +21,8 @@ function App() {
   });
 
   const [time, setTime] = useState({
-    start: '2012-01-01T00:00:00.000Z',
-    end: '2013-01-01T00:00:00.000Z',
+    start: '2012-10-01T00:00:00.000Z',
+    end: '2012-11-01T00:00:00.000Z',
   })
   const debouncedTime = useDebounce(time, 1000)
 
@@ -32,6 +32,9 @@ function App() {
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
   const [debug, setDebug] = useState(true)
+
+  const [showInfo, setShowInfo] = useState(false)
+
   const layers = useMemo(
     () => {
       const generators = [
@@ -126,7 +129,14 @@ function App() {
           setDebug(e.target.checked)
         }} />
         <label htmlFor="debug">debug</label>
-        <div>{time.start} - {time.end}</div>
+        <div className="info">
+          <div>{DateTime.fromISO(time.start).toUTC().toLocaleString(DateTime.DATETIME_MED)} ↦ {DateTime.fromISO(time.end).toUTC().toLocaleString(DateTime.DATETIME_MED)}</div>
+          <button onClick={() => setShowInfo(!showInfo)}>more info ▾</button>
+        </div>
+        {showInfo && <div>
+          <div><b>Active time chunks:</b></div>
+          {style && style.metadata && style.metadata.layers['heatmap-animated'] && <pre>{JSON.stringify(style.metadata.layers['heatmap-animated'].timeChunks, null, 2)}</pre>}
+        </div>}
       </div>
     </div>
   );

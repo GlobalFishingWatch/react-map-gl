@@ -11,23 +11,35 @@
     "deploy": "NODE_DEBUG=gh-pages gh-pages -d public"
   },
   "dependencies": {
+    "@globalfishingwatch/api-client": "1.2.5",
+    "@globalfishingwatch/layer-composer": "2.4.3",
+    "@globalfishingwatch/map-components": "^3.1.0",
+    "@globalfishingwatch/react-hooks": "2.5.0",
+    "@globalfishingwatch/timebar": "1.0.12",
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
+    "babel-polyfill": "^6.26.0",
     "d3-array": "^1.0.5",
     "d3-request": "^1.0.5",
     "d3-scale": "^1.0.6",
+    "dayjs": "^1.8.30",
     "gl-matrix": "^3.0.0",
     "immutable": "^3.7.5",
-    "react": "^16.8.6",
-    "react-dom": "^16.8.6",
+    "luxon": "^1.24.1",
+    "qs": "^6.9.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-map-gl-draw": "^0.17.2",
     "styled-components": "^4.3.2"
   },
   "devDependencies": {
-    "gatsby": "^2.20.24",
+    "@mdx-js/mdx": "^1.6.14",
+    "@mdx-js/react": "^1.6.14",
+    "gatsby": "~2.24.12",
     "gatsby-plugin-env-variables": "^1.0.1",
-    "gatsby-plugin-no-sourcemaps": "^2.1.1",
-    "gatsby-theme-ocular": "^1.2.3",
+    "gatsby-plugin-mdx": "^1.2.30",
+    "gatsby-plugin-no-sourcemaps": "^2.2.0",
+    "gatsby-theme-ocular": "^1.2.1",
     "gh-pages": "^2.1.0"
   }
 }

@@ -162,6 +162,7 @@ body {
   grid-template-rows: 1fr auto;
   gap: 1px 1px;
   grid-template-areas: "map" "timebar";
+  position: relative;
 }
 
 .timebar { grid-area: timebar; }
@@ -170,7 +171,7 @@ body {
 
 .control-buttons {
   position: absolute;
-  top: 65px;
+  top: 0;
   left: 0;
   background: white;
 }

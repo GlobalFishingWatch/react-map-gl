@@ -49,6 +49,7 @@ export default function App() {
           type: Generators.Type.HeatmapAnimated,
           tileset,
           debug,
+          tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
         })
       } else {
         generators.push({

@@ -5,7 +5,7 @@
     "build": "webpack"
   },
   "dependencies": {
-    "@globalfishingwatch/layer-composer": "2.4.3",
+    "@globalfishingwatch/layer-composer": "2.4.4",
     "@globalfishingwatch/map-components": "^3.1.0",
     "@globalfishingwatch/react-hooks": "2.5.0",
     "@globalfishingwatch/timebar": "1.0.11",

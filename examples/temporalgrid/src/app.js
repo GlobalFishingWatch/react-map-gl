@@ -7,7 +7,6 @@ import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 
-const NOOP = () => {}
 // const DEFAULT_TILESET = 'carriers_v8'
 const DEFAULT_TILESET = 'fishing_v3'
 
@@ -30,8 +29,12 @@ function App() {
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
   const [debug, setDebug] = useState(true)
-
+  const [debugLabels, setDebugLabels] = useState(true)
+  const [geomTypeMode, setGeomTypeMode] = useState('gridded')
+  
   const [showInfo, setShowInfo] = useState(false)
+
+  const [isPlaying, setIsPlaying] = useState(false)
   
   const layers = useMemo(
     () => {
@@ -44,12 +47,18 @@ function App() {
       }
 
       if (animated) {
+        let geomType = geomTypeMode
+        if (geomType === 'blobOnPlay') {
+          geomType = (isPlaying) ? 'blob' : 'gridded'
+        }
         generators.push({
           id: 'heatmap-animated',
           type: Generators.Type.HeatmapAnimated,
           tileset,
           debug,
-          tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
+          debugLabels,
+          geomType,
+          // tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
         })
       } else {
         generators.push({
@@ -68,7 +77,7 @@ function App() {
 
     return generators
   },
-    [viewport, showBasemap, debug, tileset]
+    [viewport, showBasemap, debug, debugLabels, tileset, geomTypeMode, isPlaying]
   );
 
   // TODO switch between debounced/immediate/throttled time when using animated
@@ -76,7 +85,7 @@ function App() {
 
   const mapRef = useRef(null)
   if (mapRef && mapRef.current) {
-    mapRef.current.getMap().showTileBoundaries = true
+    mapRef.current.getMap().showTileBoundaries = debug
   }
 
   const onMapClick = useCallback((e) => {
@@ -108,26 +117,51 @@ function App() {
             setTime({start,end})
           }}
           enablePlayback
+          onTogglePlay={setIsPlaying}
         >
           {/* TODO hack to shut up timebar warning, will need to fix in Timebar */}
-          {NOOP}
+
         </TimebarComponent>
       </div>
       <div className="control-buttons">
-        <input type="text" value={currentTileset} onChange={(event) => setCurrentTileset(event.target.value)} />
-        <button onClick={() => setTileset(currentTileset)}>ok</button>
-        <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
-          setShowBasemap(e.target.checked)
-        }} />
-        <label htmlFor="showBasemap">basemap</label>
-        <input type="checkbox" id="animated" checked={animated} onChange={(e) => {
-          setAnimated(e.target.checked)
-        }} />
-        <label htmlFor="animated">animated</label>
-        <input type="checkbox" id="debug" checked={debug} onChange={(e) => {
-          setDebug(e.target.checked)
-        }} />
-        <label htmlFor="debug">debug</label>
+        <fieldset>
+          <input type="text" value={currentTileset} onChange={(event) => setCurrentTileset(event.target.value)} />
+          <button onClick={() => setTileset(currentTileset)}>ok</button>
+        </fieldset>
+        <fieldset>
+          <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
+            setShowBasemap(e.target.checked)
+          }} />
+          <label htmlFor="showBasemap">basemap</label>
+        </fieldset>
+        <fieldset>
+          <input type="checkbox" id="animated" checked={animated} onChange={(e) => {
+            setAnimated(e.target.checked)
+          }} />
+          <label htmlFor="animated">animated</label>
+        </fieldset>
+        <fieldset>
+          <input type="checkbox" id="debug" checked={debug} onChange={(e) => {
+            setDebug(e.target.checked)
+          }} />
+          <label htmlFor="debug">debug</label>
+        </fieldset>
+        <fieldset>
+          <input type="checkbox" id="debugLabels" checked={debugLabels} onChange={(e) => {
+            setDebugLabels(e.target.checked)
+          }} />
+          <label htmlFor="debugLabels">debugLabels</label>
+        </fieldset>
+
+        <fieldset>
+          <select id="geom" onChange={(event) => { setGeomTypeMode(event.target.value)}}>
+            <option value="gridded">geom:gridded</option>
+            <option value="blob">geom:blob</option>
+            <option value="blobOnPlay">geom:blob on play</option>
+          </select>
+        </fieldset>
+        <hr />
+
         <div className="info">
           <div>{DateTime.fromISO(time.start).toUTC().toLocaleString(DateTime.DATETIME_MED)} ↦ {DateTime.fromISO(time.end).toUTC().toLocaleString(DateTime.DATETIME_MED)}</div>
           <button onClick={() => setShowInfo(!showInfo)}>more info ▾</button>

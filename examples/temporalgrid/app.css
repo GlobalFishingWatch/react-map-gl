@@ -35,6 +35,13 @@ body {
   padding: .4rem;
 }
 
+fieldset {
+  display: inline-block;
+  border: none;
+  padding: 0;
+  margin: 0 1rem 0 0;
+}
+
 .info {
   display: flex;
   justify-content: space-between;

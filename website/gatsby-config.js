@@ -1,5 +1,7 @@
-const resolve = require('path').resolve;
+const {resolve} = require('path');
 const DOC_TABLE_OF_CONTENTS = require('../docs/table-of-contents.json');
+
+const ROOT_DIR = resolve('..');
 
 module.exports = {
   siteMetadata: {
@@ -14,22 +16,28 @@ module.exports = {
 
         // Folders
         DIR_NAME: __dirname,
-        ROOT_FOLDER: `${__dirname}/../`,
+        ROOT_FOLDER: ROOT_DIR,
 
         DOCS: DOC_TABLE_OF_CONTENTS,
-        DOC_FOLDERS: [`${__dirname}/../docs/`],
-        SOURCE: [`${__dirname}/static`],
+        DOC_FOLDERS: [
+          resolve(ROOT_DIR, 'docs')
+        ],
+        SOURCE: [
+          resolve('./static'),
+          resolve('./src'),
+        ],
 
         PROJECT_TYPE: 'github',
 
         PROJECT_NAME: 'react-map-gl',
         PROJECT_ORG: 'uber',
-        PROJECT_ORG_LOGO: 'images/uber-logo.png',
+        PROJECT_ORG_LOGO: 'images/visgl-logo.png',
         PROJECT_URL: 'https://github.com/visgl/',
         PROJECT_DESC: 'React wrapper for Mapbox GL JS',
-        PATH_PREFIX: '/react-map-gl/',
+        PROJECT_IMAGE: 'images/hero-sm.jpg',
+        PATH_PREFIX: '/react-map-gl',
 
-        GA_TRACKING_ID: 'dummy_tracking_id',
+        GA_TRACKING_ID: 'UA-XXXXXXXX-X',
 
         // For showing star counts and contributors.
         // Should be like btoa('YourUsername:YourKey') and should be readonly.
@@ -58,7 +66,7 @@ module.exports = {
 
         LINK_TO_GET_STARTED: '/docs/get-started/get-started',
 
-        ADDITIONAL_LINKS: [{name: 'Blog', href: 'http://medium.com/vis-gl', index: 1}],
+        ADDITIONAL_LINKS: [{name: 'Blog', href: 'http://medium.com/vis-gl', index: 4}],
 
         INDEX_PAGE_URL: resolve(__dirname, './src/home.js'),
 
@@ -148,6 +156,8 @@ module.exports = {
             path: 'examples/draw-polygon'
           }
         ],
+
+        THEME_OVERRIDES: require('./src/theme.json'),
 
         STYLESHEETS: [
           'https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css',

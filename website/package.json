@@ -13,6 +13,7 @@
   "dependencies": {
     "@globalfishingwatch/api-client": "1.2.5",
     "@globalfishingwatch/layer-composer": "2.4.4",
+    "@globalfishingwatch/mapbox-gl": "^1.11.1",
     "@globalfishingwatch/map-components": "^3.1.0",
     "@globalfishingwatch/react-hooks": "2.5.0",
     "@globalfishingwatch/timebar": "1.0.12",
@@ -30,8 +31,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-map-gl-draw": "^0.17.2",
-    "styled-components": "^4.3.2",
-    "mapbox-gl": "https://github.com/GlobalFishingWatch/mapbox-gl-js.git#build"
+    "styled-components": "^4.3.2"
   },
   "devDependencies": {
     "@mdx-js/mdx": "^1.6.14",

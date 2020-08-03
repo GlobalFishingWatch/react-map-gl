@@ -6,9 +6,14 @@ import { DateTime } from 'luxon'
 import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
+import Tileset from './tileset';
 
-// const DEFAULT_TILESET = 'carriers_v8'
-const DEFAULT_TILESET = 'fishing_v3'
+export const DEFAULT_TILESET = { 
+  // tileset: 'carriers_v8',
+  tileset: 'fishing_v3',
+  // filter: ''
+  filter: "flag='CHN'"
+}
 
 export default function App() {
   const [viewport, setViewport] = useState({
@@ -24,7 +29,6 @@ export default function App() {
   const debouncedTime = useDebounce(time, 1000)
 
   const [tileset, setTileset] = useState(DEFAULT_TILESET)
-  const [currentTileset, setCurrentTileset] = useState(DEFAULT_TILESET)
 
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
@@ -54,17 +58,18 @@ export default function App() {
         generators.push({
           id: 'heatmap-animated',
           type: Generators.Type.HeatmapAnimated,
-          tileset,
+          tileset: tileset.tileset,
           debug,
           debugLabels,
           geomType,
+          serverSideFilter: tileset.filter,
           // tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
         })
       } else {
         generators.push({
           id: 'heatmap',
           type: Generators.Type.Heatmap,
-          tileset,
+          tileset: tileset.tileset,
           visible: true,
           geomType: 'gridded',
           serverSideFilter: undefined,
@@ -124,10 +129,8 @@ export default function App() {
         </TimebarComponent>
       </div>
       <div className="control-buttons">
-        <fieldset>
-          <input type="text" value={currentTileset} onChange={(event) => setCurrentTileset(event.target.value)} />
-          <button onClick={() => setTileset(currentTileset)}>ok</button>
-        </fieldset>
+        <Tileset onChange={setTileset} />
+        <hr />
         <fieldset>
           <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
             setShowBasemap(e.target.checked)

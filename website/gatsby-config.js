@@ -2,6 +2,10 @@ const resolve = require('path').resolve;
 const DOC_TABLE_OF_CONTENTS = require('../docs/table-of-contents.json');
 
 module.exports = {
+  siteMetadata: {
+    title: '',
+    Site: ''
+  },
   plugins: [
     {
       resolve: `gatsby-theme-ocular`,
@@ -13,9 +17,7 @@ module.exports = {
         ROOT_FOLDER: `${__dirname}/../`,
 
         DOCS: DOC_TABLE_OF_CONTENTS,
-        DOC_FOLDERS: [
-          `${__dirname}/../docs/`
-        ],
+        DOC_FOLDERS: [`${__dirname}/../docs/`],
         SOURCE: [`${__dirname}/static`],
 
         PROJECT_TYPE: 'github',
@@ -27,7 +29,7 @@ module.exports = {
         PROJECT_DESC: 'React wrapper for Mapbox GL JS',
         PATH_PREFIX: '/react-map-gl/',
 
-        GA_TRACKING: null,
+        GA_TRACKING_ID: 'dummy_tracking_id',
 
         // For showing star counts and contributors.
         // Should be like btoa('YourUsername:YourKey') and should be readonly.
@@ -62,10 +64,10 @@ module.exports = {
 
         EXAMPLES: [
           {
-            title: 'Dynamic Styling',
-            image: 'images/example-layers.jpg',
-            componentUrl: resolve(__dirname, '../examples/layers/src/app.js'),
-            path: 'examples/layers'
+            title: 'Temporal grid',
+            image: 'images/temporalgrid.png',
+            componentUrl: resolve(__dirname, '../examples/temporalgrid/src/app.js'),
+            path: 'examples/temporalgrid'
           },
           {
             title: 'Markers & Popups',

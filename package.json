@@ -1,7 +1,7 @@
 {
-  "name": "react-map-gl",
+  "name": "@globalfishingwatch/react-map-gl",
   "description": "A React wrapper for MapboxGL-js and overlay API.",
-  "version": "5.2.0",
+  "version": "5.2.7",
   "keywords": [
     "mapbox",
     "mapbox-gl",
@@ -9,6 +9,7 @@
     "react-mapbox-gl",
     "react mapbox"
   ],
+  "types": "types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/visgl/react-map-gl.git"
@@ -26,6 +27,7 @@
   "files": [
     "src",
     "dist",
+    "types",
     "README.md"
   ],
   "scripts": {
@@ -37,6 +39,7 @@
     "build": "ocular-clean && ocular-build",
     "lint": "ocular-lint",
     "cover": "ocular-test cover",
+    "prepare": "yarn build",
     "publish-prod": "ocular-publish prod",
     "publish-beta": "ocular-publish beta",
     "test": "flow check && ocular-test",
@@ -46,7 +49,9 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "mapbox-gl": "https://github.com/GlobalFishingWatch/mapbox-gl-js.git#build",
+    "@globalfishingwatch/mapbox-gl": "^1.11.1",
+    "@types/mapbox-gl": "^1.11.1",
+    "@types/react-map-gl": "^5.2.6",
     "mjolnir.js": "^2.4.0",
     "prop-types": "^15.7.2",
     "resize-observer-polyfill": "^1.5.1",

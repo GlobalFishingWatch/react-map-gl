@@ -13,8 +13,8 @@ import Tileset from './tileset';
 export const DEFAULT_TILESET = { 
   // tileset: 'carriers_v8',
   tileset: 'fishing_v3',
-  // filter: ''
-  filter: "flag='CHN'"
+  filter: ''
+  // filter: "flag='CHN'"
 }
 
 export default function App() {
@@ -33,7 +33,7 @@ export default function App() {
   const [tileset, setTileset] = useState(DEFAULT_TILESET)
 
   const [showBasemap, setShowBasemap] = useState(true)
-  const [animated, setAnimated] = useState(true)
+  const [animated, setAnimated] = useState(false)
   const [debug, setDebug] = useState(true)
   const [debugLabels, setDebugLabels] = useState(true)
   const [geomTypeMode, setGeomTypeMode] = useState('gridded')
@@ -84,7 +84,7 @@ export default function App() {
 
     return generators
   },
-    [viewport, showBasemap, debug, debugLabels, tileset, geomTypeMode, isPlaying]
+    [animated, viewport, showBasemap, debug, debugLabels, tileset, geomTypeMode, isPlaying]
   );
 
   // TODO switch between debounced/immediate/throttled time when using animated

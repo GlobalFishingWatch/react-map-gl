@@ -8,19 +8,43 @@ import { DateTime } from 'luxon'
 import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
-import Tileset from './tileset';
+import Tilesets from './tilesets';
 
-export const DEFAULT_TILESET = { 
-  // tileset: 'carriers_v8',
-  tileset: 'fishing_v3',
-  filter: ''
-  // filter: "flag='CHN'"
-}
+export const DEFAULT_TILESETS = [
+  {
+    // tileset: 'carriers_v8',
+    tileset: 'fishing_v4',
+    // filter: ''
+    filter: "flag='ESP'",
+    active: true
+  },
+  {
+    tileset: 'fishing_v4',
+    filter: "flag='FRA'",
+    active: false
+  },
+  {
+    tileset: 'fishing_v4',
+    filter: "flag='ITA'",
+    active: false
+  },
+  {
+    tileset: 'fishing_v4',
+    filter: "flag='GBR'",
+    active: false
+  },
+  {
+    tileset: 'fishing_v4',
+    filter: "flag='PRT'",
+    active: false
+  }
+]
+
 
 export default function App() {
   const [viewport, setViewport] = useState({
-    longitude: -17.3163661,
-    latitude: 16.3762596,
+    longitude: -6,
+    latitude: 47,
     zoom: 4.6424032
   });
 
@@ -30,10 +54,11 @@ export default function App() {
   })
   const debouncedTime = useDebounce(time, 1000)
 
-  const [tileset, setTileset] = useState(DEFAULT_TILESET)
+  const [tilesets, setTilesets] = useState(DEFAULT_TILESETS)
+  const [combinationMode, setCombinationMode] = useState('add')
 
   const [showBasemap, setShowBasemap] = useState(true)
-  const [animated, setAnimated] = useState(false)
+  const [animated, setAnimated] = useState(true)
   const [debug, setDebug] = useState(true)
   const [debugLabels, setDebugLabels] = useState(true)
   const [geomTypeMode, setGeomTypeMode] = useState('gridded')
@@ -41,6 +66,8 @@ export default function App() {
   const [showInfo, setShowInfo] = useState(false)
 
   const [isPlaying, setIsPlaying] = useState(false)
+
+  const [isLoading, setLoading] = useState(false)
 
   const layers = useMemo(
     () => {
@@ -53,25 +80,33 @@ export default function App() {
       }
 
       if (animated) {
+
         let geomType = geomTypeMode
         if (geomType === 'blobOnPlay') {
           geomType = (isPlaying) ? 'blob' : 'gridded'
         }
+        const activeTilesets = tilesets.filter(t => t.active)
+        const colorRamps = (activeTilesets.length === 1 || combinationMode === 'add')
+          ? ['presence']
+          : ['sky', 'magenta', 'yellow', 'salmon', 'green'].slice(0, activeTilesets.length)
         generators.push({
           id: 'heatmap-animated',
           type: Generators.Type.HeatmapAnimated,
-          tileset: tileset.tileset,
+          tilesets: activeTilesets.map(t => t.tileset),
+          filters: activeTilesets.map(t => t.filter),
           debug,
           debugLabels,
           geomType,
-          serverSideFilter: tileset.filter,
           // tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
+          tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1/datasets',
+          combinationMode,
+          colorRamps,
         })
       } else {
         generators.push({
           id: 'heatmap',
           type: Generators.Type.Heatmap,
-          tileset: tileset.tileset,
+          tileset: tilesets.tileset[0],
           visible: true,
           geomType: 'gridded',
           serverSideFilter: undefined,
@@ -84,7 +119,7 @@ export default function App() {
 
     return generators
   },
-    [animated, viewport, showBasemap, debug, debugLabels, tileset, geomTypeMode, isPlaying]
+    [animated, viewport, showBasemap, debug, debugLabels, tilesets, geomTypeMode, isPlaying, combinationMode]
   );
 
   // TODO switch between debounced/immediate/throttled time when using animated
@@ -93,6 +128,12 @@ export default function App() {
   const mapRef = useRef(null)
   if (mapRef && mapRef.current) {
     mapRef.current.getMap().showTileBoundaries = debug
+    mapRef.current.getMap().on('idle', () =>  {
+      setLoading(false)
+    })
+    mapRef.current.getMap().on('dataloading', () =>  {
+      setLoading(true)
+    })
   }
 
   const onMapClick = useCallback((e) => {
@@ -103,6 +144,7 @@ export default function App() {
 
   return (
     <div className="container">
+      {isLoading && <div className="loading">loading</div>}
       <div className="map">
         <MapGL
           {...viewport}
@@ -112,6 +154,7 @@ export default function App() {
           mapStyle={style}
           onViewportChange={nextViewport => setViewport(nextViewport)}
           onClick={onMapClick}
+          onData={() => { console.log('loafed') }}
         />
       </div>
       <div className="timebar">
@@ -131,7 +174,7 @@ export default function App() {
         </TimebarComponent>
       </div>
       <div className="control-buttons">
-        <Tileset onChange={setTileset} />
+        <Tilesets onChange={(tilesets, combinationMode) => { setTilesets(tilesets); setCombinationMode(combinationMode) }} />
         <hr />
         <fieldset>
           <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {

@@ -1,10 +1,11 @@
+/* eslint max-statements: 0 */
 import 'babel-polyfill';
 import React, {useState, useMemo, useRef, useCallback} from 'react';
 import {render} from 'react-dom';
 import MapGL from 'react-map-gl';
 import { DateTime } from 'luxon'
 import { Generators } from '@globalfishingwatch/layer-composer';
-import { useLayerComposer, useDebounce } from '@globalfishingwatch/react-hooks';
+import { useLayerComposer, useDebounce, useMapInteraction } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 import Tilesets from './tilesets';
 
@@ -120,8 +121,29 @@ export default function App() {
     [animated, viewport, showBasemap, debug, debugLabels, tilesets, geomTypeMode, isPlaying, combinationMode]
   );
 
-  // TODO switch between debounced/immediate/throttled time when using animated
-  const { style } = useLayerComposer(layers, (animated) ? time: debouncedTime)
+
+  const clickCallback = useCallback((feature) => {
+    // probably dispatch a redux action here or whatever
+    console.log(feature)
+  })
+  const [highlightedFeature, setHighlightedFeature] = useState(null)
+  const hoverCallback = useCallback((feature) => {
+    setHighlightedFeature(feature)
+  })
+
+  const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback)
+
+
+  const globalConfig = useMemo(() => {
+    const finalTime = (animated) ? time: debouncedTime
+    return {
+      ...finalTime,
+      highlightedFeature
+    }
+  }, [animated, time, debouncedTime, highlightedFeature])
+
+  const { style } = useLayerComposer(layers, globalConfig)
+
 
   const mapRef = useRef(null)
   if (mapRef && mapRef.current) {
@@ -134,17 +156,11 @@ export default function App() {
     })
   }
 
-  const onMapClick = useCallback((e) => {
-    if (e.features && e.features.length) {
-      console.log(e.features[0])
-    }
-  })
-
   return (
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
       <div className="map">
-        <MapGL
+        {style && <MapGL
           {...viewport}
           ref={mapRef}
           width="100%"
@@ -152,8 +168,10 @@ export default function App() {
           mapStyle={style}
           onViewportChange={nextViewport => setViewport(nextViewport)}
           onClick={onMapClick}
-          onData={() => { console.log('loafed') }}
-        />
+          onHover={onMapHover}
+          interactiveLayerIds={style.metadata.interactiveLayerIds}
+        />}
+        
       </div>
       <div className="timebar">
         <TimebarComponent
@@ -172,7 +190,7 @@ export default function App() {
         </TimebarComponent>
       </div>
       <div className="control-buttons">
-        <Tilesets onChange={(tilesets, combinationMode) => { setTilesets(tilesets); setCombinationMode(combinationMode) }} />
+        <Tilesets onChange={(newTilesets, newCombinationMode) => { setTilesets(newTilesets); setCombinationMode(newCombinationMode) }} />
         <hr />
         <fieldset>
           <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {

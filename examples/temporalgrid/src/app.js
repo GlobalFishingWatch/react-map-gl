@@ -129,9 +129,13 @@ export default function App() {
           geomType = (isPlaying) ? 'blob' : 'gridded'
         }
         const activeTilesets = tilesets.filter(t => t.active)
-        const colorRamps = (activeTilesets.length === 1 || combinationMode === 'add')
-          ? ['presence']
-          : ['sky', 'magenta', 'yellow', 'salmon', 'green'].slice(0, activeTilesets.length)
+        let colorRamps = ['presence']
+        if (activeTilesets.length > 1 && combinationMode === 'compare') {
+          colorRamps = ['sky', 'magenta', 'yellow', 'salmon', 'green'].slice(0, activeTilesets.length)
+        } else if (activeTilesets.length > 1 && combinationMode === 'bivariate') {
+          colorRamps = ['bivariate']
+        }
+
         generators.push({
           id: 'heatmap-animated',
           type: Generators.Type.HeatmapAnimated,
@@ -250,7 +254,7 @@ export default function App() {
           onHover={onMapHover}
           interactiveLayerIds={[...customStyle.metadata.interactiveLayerIds, 'test']}
         />}
-        
+
       </div>
       <div className="timebar">
         <TimebarComponent

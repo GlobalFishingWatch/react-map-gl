@@ -39,6 +39,48 @@ export const DEFAULT_TILESETS = [
   }
 ]
 
+const TEST_GEO_JSON = {
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {},
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -12.65625,
+              41.244772343082076
+            ],
+            [
+              -3.69140625,
+              41.11246878918088
+            ],
+            [
+              -5.2734375,
+              44.715513732021336
+            ],
+            [
+              -7.03125,
+              46.92025531537451
+            ],
+            [
+              -10.8984375,
+              45.706179285330855
+            ],
+            [
+              -12.65625,
+              41.244772343082076
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
+
+
 
 export default function App() {
   const [viewport, setViewport] = useState({
@@ -58,8 +100,8 @@ export default function App() {
 
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
-  const [debug, setDebug] = useState(true)
-  const [debugLabels, setDebugLabels] = useState(true)
+  const [debug, setDebug] = useState(false)
+  const [debugLabels, setDebugLabels] = useState(false)
   const [geomTypeMode, setGeomTypeMode] = useState('gridded')
   
   const [showInfo, setShowInfo] = useState(false)
@@ -121,31 +163,65 @@ export default function App() {
     [animated, viewport, showBasemap, debug, debugLabels, tilesets, geomTypeMode, isPlaying, combinationMode]
   );
 
+  const mapRef = useRef(null)
 
+
+  // const [highlightedFeature, setHighlightedFeature] = useState(null)
   const clickCallback = useCallback((feature) => {
     // probably dispatch a redux action here or whatever
     console.log(feature)
   })
-  const [highlightedFeature, setHighlightedFeature] = useState(null)
   const hoverCallback = useCallback((feature) => {
-    setHighlightedFeature(feature)
+    // console.log(feature)
+    // // setHighlightedFeature(feature)
+    // if (feature) {
+    //   console.log({
+    //     source: feature.source,
+    //     id: feature.featureStateId,
+    //   })
+    // }
   })
 
-  const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback)
-
+  const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback, (mapRef && mapRef.current) ? mapRef.current.getMap() : null)
 
   const globalConfig = useMemo(() => {
     const finalTime = (animated) ? time: debouncedTime
-    return {
-      ...finalTime,
-      highlightedFeature
-    }
-  }, [animated, time, debouncedTime, highlightedFeature])
+    return { ...finalTime }
+  }, [animated, time, debouncedTime])
 
   const { style } = useLayerComposer(layers, globalConfig)
+  const customStyle = useMemo(() => {
+    if (!style) return null
+    return {
+      ...style,
+      sources: {
+        ...style.sources,
+        'test': {
+          type: 'geojson',
+          data: TEST_GEO_JSON,
+          generateId: true,
+        }
+      },
+      layers: [
+        ...style.layers,
+        {
+          id: 'test',
+          source: 'test',
+          type: 'fill',
+          paint: {
+            'fill-color': 'rgba(0,0,0,0)',
+            'fill-outline-color': [
+              'case',
+              ['boolean', ['feature-state', 'hover'], false],
+              '#ffffff',
+              '#000000',
+            ]
+          }
+        }
+      ]
+    }
+  }, [style])
 
-
-  const mapRef = useRef(null)
   if (mapRef && mapRef.current) {
     mapRef.current.getMap().showTileBoundaries = debug
     mapRef.current.getMap().on('idle', () =>  {
@@ -160,16 +236,16 @@ export default function App() {
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
       <div className="map">
-        {style && <MapGL
+        {customStyle && <MapGL
           {...viewport}
           ref={mapRef}
           width="100%"
           height="100%"
-          mapStyle={style}
+          mapStyle={customStyle}
           onViewportChange={nextViewport => setViewport(nextViewport)}
           onClick={onMapClick}
           onHover={onMapHover}
-          interactiveLayerIds={style.metadata.interactiveLayerIds}
+          interactiveLayerIds={[...customStyle.metadata.interactiveLayerIds, 'test']}
         />}
         
       </div>

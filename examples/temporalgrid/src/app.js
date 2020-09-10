@@ -1,13 +1,21 @@
 /* eslint max-statements: 0 */
 import 'babel-polyfill';
-import React, {useState, useMemo, useRef, useCallback} from 'react';
+import React, {useState, useMemo, useCallback} from 'react';
 import {render} from 'react-dom';
-import MapGL from 'react-map-gl';
 import { DateTime } from 'luxon'
 import { Generators } from '@globalfishingwatch/layer-composer';
 import { useLayerComposer, useDebounce, useMapInteraction } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 import Tilesets from './tilesets';
+import HoverPopup from './hoverPopup';
+import Map from './map';
+
+// if (process.env.NODE_ENV === 'development') {
+//   const whyDidYouRender = require('@welldone-software/why-did-you-render');
+//   whyDidYouRender(React, {
+//     trackAllPureComponents: true,
+//   });
+// }
 
 export const DEFAULT_TILESETS = [
   { 
@@ -39,56 +47,8 @@ export const DEFAULT_TILESETS = [
   }
 ]
 
-const TEST_GEO_JSON = {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              -12.65625,
-              41.244772343082076
-            ],
-            [
-              -3.69140625,
-              41.11246878918088
-            ],
-            [
-              -5.2734375,
-              44.715513732021336
-            ],
-            [
-              -7.03125,
-              46.92025531537451
-            ],
-            [
-              -10.8984375,
-              45.706179285330855
-            ],
-            [
-              -12.65625,
-              41.244772343082076
-            ]
-          ]
-        ]
-      }
-    }
-  ]
-}
-
-
 
 export default function App() {
-  const [viewport, setViewport] = useState({
-    longitude: -6,
-    latitude: 47,
-    zoom: 4.6424032
-  });
-
   const [time, setTime] = useState({
     start: '2012-10-01T00:00:00.000Z',
     end: '2012-11-01T00:00:00.000Z',
@@ -158,36 +118,29 @@ export default function App() {
           serverSideFilter: undefined,
           // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
           updateColorRampOnTimeChange: true,
-          zoom: viewport.zoom,
+          // zoom: viewport.zoom,
           fetchStats: true
         })
       }
 
     return generators
   },
-    [animated, viewport, showBasemap, debug, debugLabels, tilesets, geomTypeMode, isPlaying, combinationMode]
+    [animated, showBasemap, debug, debugLabels, tilesets, geomTypeMode, isPlaying, combinationMode]
   );
 
-  const mapRef = useRef(null)
+  const [mapRef, setMapRef] = useState(null)
 
-
-  // const [highlightedFeature, setHighlightedFeature] = useState(null)
   const clickCallback = useCallback((feature) => {
     // probably dispatch a redux action here or whatever
     console.log(feature)
   })
-  const hoverCallback = useCallback((feature) => {
-    // console.log(feature)
-    // // setHighlightedFeature(feature)
-    // if (feature) {
-    //   console.log({
-    //     source: feature.source,
-    //     id: feature.featureStateId,
-    //   })
-    // }
-  })
 
-  const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback, (mapRef && mapRef.current) ? mapRef.current.getMap() : null)
+  const [hoveredEvent, setHoveredEvent] = useState(null)
+  const hoverCallback = useCallback((event) => {
+    setHoveredEvent(event)
+  }, [])
+
+  const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback, mapRef)
 
   const globalConfig = useMemo(() => {
     const finalTime = (animated) ? time: debouncedTime
@@ -195,44 +148,13 @@ export default function App() {
   }, [animated, time, debouncedTime])
 
   const { style } = useLayerComposer(layers, globalConfig)
-  const customStyle = useMemo(() => {
-    if (!style) return null
-    return {
-      ...style,
-      sources: {
-        ...style.sources,
-        'test': {
-          type: 'geojson',
-          data: TEST_GEO_JSON,
-          generateId: true,
-        }
-      },
-      layers: [
-        ...style.layers,
-        {
-          id: 'test',
-          source: 'test',
-          type: 'fill',
-          paint: {
-            'fill-color': 'rgba(0,0,0,0)',
-            'fill-outline-color': [
-              'case',
-              ['boolean', ['feature-state', 'hover'], false],
-              '#ffffff',
-              '#000000',
-            ]
-          }
-        }
-      ]
-    }
-  }, [style])
 
-  if (mapRef && mapRef.current) {
-    mapRef.current.getMap().showTileBoundaries = debug
-    mapRef.current.getMap().on('idle', () =>  {
+  if (mapRef) {
+    mapRef.showTileBoundaries = debug
+    mapRef.on('idle', () =>  {
       setLoading(false)
     })
-    mapRef.current.getMap().on('dataloading', () =>  {
+    mapRef.on('dataloading', () =>  {
       setLoading(true)
     })
   }
@@ -241,18 +163,9 @@ export default function App() {
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
       <div className="map">
-        {customStyle && <MapGL
-          {...viewport}
-          ref={mapRef}
-          width="100%"
-          height="100%"
-          mapStyle={customStyle}
-          onViewportChange={nextViewport => setViewport(nextViewport)}
-          onClick={onMapClick}
-          onHover={onMapHover}
-          interactiveLayerIds={[...customStyle.metadata.interactiveLayerIds, 'test']}
-        />}
-        
+        {style && <Map style={style} onMapClick={onMapClick} onMapHover={onMapHover} onSetMapRef={setMapRef}>
+          <HoverPopup hoveredEvent={hoveredEvent} />
+        </Map>}
       </div>
       <div className="timebar">
         <TimebarComponent

@@ -144,6 +144,7 @@ export default function App() {
           tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1/datasets',
           combinationMode,
           colorRamps,
+          interactive: true,
         })
       } else {
         generators.push({

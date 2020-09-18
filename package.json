@@ -1,7 +1,7 @@
 {
   "name": "@globalfishingwatch/react-map-gl",
   "description": "A React wrapper for MapboxGL-js and overlay API.",
-  "version": "5.2.7-gfw.0",
+  "version": "5.2.7-gfw.1",
   "keywords": [
     "mapbox",
     "mapbox-gl",
@@ -49,7 +49,6 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@types/mapbox-gl": "^1.11.1",
     "@types/react-map-gl": "^5.2.6",
     "mjolnir.js": "^2.4.0",
     "prop-types": "^15.7.2",

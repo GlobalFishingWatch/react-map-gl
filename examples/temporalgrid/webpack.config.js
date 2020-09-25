@@ -13,7 +13,7 @@ const config = {
   mode: 'development',
 
   entry: {
-    app: resolve('./src/app.js')
+    app: resolve('./src/App.js')
   },
 
   output: {

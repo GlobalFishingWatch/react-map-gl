@@ -1,5 +1,5 @@
 import React, {useState, useRef, useEffect, useMemo} from 'react';
-import MapGL from 'react-map-gl';
+import MapGL from '@globalfishingwatch/react-map-gl';
 
 const TEST_GEO_JSON = {
   "type": "FeatureCollection",
@@ -92,7 +92,10 @@ const Map = React.memo(function Map({ style, onMapClick, onMapHover, onSetMapRef
   }, [style])
 
   const customInteractiveLayerIds = useMemo(() => {
-    return [...style.metadata.interactiveLayerIds, 'test']
+    if (customStyle.metadata && customStyle.metadata.interactiveLayerIds) {
+      return [...customStyle.metadata.interactiveLayerIds, 'test']
+    }
+    return null
   }, [customStyle])
 
   return <MapGL

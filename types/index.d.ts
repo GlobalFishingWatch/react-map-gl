@@ -1,7 +1,3 @@
-declare module '@globalfishingwatch/mapbox-gl' {
-  import * as MapboxGl from 'mapbox-gl'
-  export = MapboxGl
-}
 declare module '@globalfishingwatch/react-map-gl' {
   import * as ReactMapGl from 'react-map-gl'
   export = ReactMapGl

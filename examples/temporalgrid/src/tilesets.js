@@ -7,8 +7,8 @@ function Sublayer({ index, sublayer, setDatasets, setFilter, setActive }) {
       {index > 0 && <input type="checkbox" checked={sublayer.active} onChange={(event) => setActive(index, event.target.checked)} />}
     </span>
     <fieldset>
-      <label htmlFor={`tileset_${index}`} />
-      <input id={`tileset_${index}`} type="text" value={sublayer.dataset} onChange={(event) => setDatasets(index, event.target.value)} />
+      <label htmlFor={`datsets_${index}`} />
+      <input id={`datsets_${index}`} type="text" value={sublayer.datasets} onChange={(event) => setDatasets(index, event.target.value)} />
     </fieldset>
     <fieldset>
       <label htmlFor={`filters_${index}`}>filters</label>
@@ -20,9 +20,9 @@ function Sublayer({ index, sublayer, setDatasets, setFilter, setActive }) {
 export default function Sublayers({ onChange }) {
   const [sublayers, updateSublayers] = useState(DEFAULT_SUBLAYERS)
 
-  const setDatasets = useCallback((index, dataset) => {
+  const setDatasets = useCallback((index, datasets) => {
     const newSublayers = [...sublayers]
-    newSublayers[index].dataset = dataset
+    newSublayers[index].datasets = datasets
     updateSublayers(newSublayers)
   })
   const setFilter = useCallback((index, filter) => {

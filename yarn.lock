@@ -1087,6 +1087,18 @@
     tinyqueue "^2.0.3"
     vt-pbf "^3.1.1"
 
+"@globalfishingwatch/react-map-gl@^5.2.7-gfw.1-beta1":
+  version "5.2.7-gfw.1-beta1"
+  resolved "https://registry.yarnpkg.com/@globalfishingwatch/react-map-gl/-/react-map-gl-5.2.7-gfw.1-beta1.tgz#a4b4a55c8d3d7b15228bb967f0ff194f7ac21d2b"
+  integrity sha512-1Zgj1nPwKtShNodwE6lZbIKyWJq3LoxPghHKXdR5oNPJkFB9xRacVV9ROaaHNSFGzpDfyJB8ICABXtI5V1UYtA==
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@types/react-map-gl" "^5.2.6"
+    mjolnir.js "^2.4.0"
+    prop-types "^15.7.2"
+    react-virtualized-auto-sizer "^1.0.2"
+    viewport-mercator-project "^6.2.3 || ^7.0.1"
+
 "@lerna/add@3.21.0":
   version "3.21.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-3.21.0.tgz#27007bde71cc7b0a2969ab3c2f0ae41578b4577b"
@@ -2039,7 +2051,7 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
-"@types/mapbox-gl@*", "@types/mapbox-gl@^1.11.1":
+"@types/mapbox-gl@*":
   version "1.11.2"
   resolved "https://registry.yarnpkg.com/@types/mapbox-gl/-/mapbox-gl-1.11.2.tgz#e989264075ac6be633837c21241f4acd54692ceb"
   integrity sha512-IXfOnFPAbxnEhSG89MjFxuqIX6bJioPHA55yExM0qAaVdT+kfJX7P4d0wfW0Br3iSdq9ym8C9jCYHpuLT4FE6Q==

@@ -47,7 +47,7 @@ export const DEFAULT_SUBLAYERS = [
 
 const DATAVIEWS = [
   {id: 'background', type: Generators.Type.Background, color: '#00265c'},
-  {id: 'basemap', type: Generators.Type.Basemap, basemap: 'landmass' },
+  {id: 'basemap', type: Generators.Type.Basemap, basemap: 'basemap_default' },
   {
     id: 'eez',
     type: Generators.Type.CartoPolygons,

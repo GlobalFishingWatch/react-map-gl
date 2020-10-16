@@ -3,12 +3,10 @@ import React, {useState, useMemo, useCallback} from 'react';
 import {render} from 'react-dom';
 import { DateTime } from 'luxon'
 import { Generators } from '@globalfishingwatch/layer-composer';
-import { useLayerComposer, useDebounce, useMapInteraction, useMapTooltip } from '@globalfishingwatch/react-hooks';
+import { useLayerComposer, useDebounce, useMapClick, useMapHover } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 import Tilesets from './tilesets';
-import { HoverPopup, ClickPopup } from './popup';
 import Map from './map';
-
 
 export const DEFAULT_SUBLAYERS = [
   {
@@ -23,7 +21,7 @@ export const DEFAULT_SUBLAYERS = [
     id: 1,
     datasets: 'fishing_v4',
     filter: "flag='FRA'",
-    active: false
+    active: true
   },
   {
     id: 2,
@@ -47,7 +45,7 @@ export const DEFAULT_SUBLAYERS = [
 
 const DATAVIEWS = [
   {id: 'background', type: Generators.Type.Background, color: '#00265c'},
-  {id: 'basemap', type: Generators.Type.Basemap, basemap: 'basemap_default' },
+  {id: 'basemap', type: Generators.Type.Basemap },
   {
     id: 'eez',
     type: Generators.Type.CartoPolygons,
@@ -99,13 +97,12 @@ export default function App() {
   const debouncedTime = useDebounce(time, 1000)
 
   const [sublayers, setSublayers] = useState(DEFAULT_SUBLAYERS)
-  const [combinationMode, setCombinationMode] = useState('add')
+  const [mode, setMode] = useState('extruded')
 
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
   const [debug, setDebug] = useState(false)
   const [debugLabels, setDebugLabels] = useState(false)
-  const [geomTypeMode, setGeomTypeMode] = useState('gridded')
 
   const [showInfo, setShowInfo] = useState(false)
 
@@ -127,7 +124,7 @@ export default function App() {
           let colorRamp = heatmapSublayer.colorRamp
           if (sublayers.filter(t => t.active).length === 1) {
             colorRamp = 'presence'
-          } else if (combinationMode === 'bivariate') {
+          } else if (mode === 'bivariate') {
             colorRamp = 'bivariate'
           }
           return {
@@ -139,30 +136,21 @@ export default function App() {
           }
         })
 
-        let geomType = geomTypeMode
-        if (geomType === 'blobOnPlay') {
-          geomType = (isPlaying) ? 'blob' : 'gridded'
-        }
-
-        let colorRamps = ['presence']
-        if (heatmapSublayers.length > 1 && combinationMode === 'compare') {
-          colorRamps = heatmapSublayers.map(s => s.color)
-        } else if (heatmapSublayers.length === 2 && combinationMode === 'bivariate') {
-          colorRamps = ['bivariate']
+        let finalMode = mode
+        if (mode === 'blobOnPlay') {
+          finalMode = (isPlaying) ? 'blob' : 'compare'
         }
 
         generators.push({
           id: 'heatmap-animated',
           type: Generators.Type.HeatmapAnimated,
           sublayers: heatmapSublayers,
-          combinationMode,
+          mode: finalMode,
           debug,
           debugLabels,
-          geomType,
           // tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
           // tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1/datasets',
           tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1',
-          colorRamps,
           interactive: true,
         })
       } else {
@@ -174,42 +162,30 @@ export default function App() {
           geomType: 'gridded',
           serverSideFilter: undefined,
           // serverSideFilter: `vesselid IN ('ddef384a3-330b-0511-5c1d-6f8ed78de0ca')`,
-          updateColorRampOnTimeChange: true,
           // zoom: viewport.zoom,
           fetchStats: true
         })
       }
-    console.log(generators)
     return generators
   },
-    [animated, showBasemap, debug, debugLabels, sublayers, geomTypeMode, isPlaying, combinationMode]
+    [animated, showBasemap, debug, debugLabels, sublayers, mode, isPlaying]
   );
+
+  // console.log(layers)
 
   const [mapRef, setMapRef] = useState(null)
 
-  const [clickedEvent, setClickedEvent] = useState(null)
   const clickCallback = useCallback((event) => {
-    // probably dispatch a redux action here or whatever
-    setClickedEvent(event)
-    // TODO
-    // if (feature.popupCallbackURL) {
-    //   // dispatchEvent(...)
-    // }
+    console.log(event)
   }, [])
-  const closePopup = useCallback(() => {
-    setClickedEvent(null)
-  }, [])
-
-  const [hoveredEvent, setHoveredEvent] = useState(null)
   const hoverCallback = useCallback((event) => {
-    setHoveredEvent(event)
+    console.log(event)
   }, [])
 
-  const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback, mapRef)
-  // unifies app wide dataviews config and picked values, eg adds color, title, etc to picked values
-  const hoverTooltipEvent = useMapTooltip(DATAVIEWS, hoveredEvent)
-  const clickedTooltipEvent = useMapTooltip(DATAVIEWS, clickedEvent)
-  // const { legends } = useMapLegend(style, dataviews, )
+  // TODO useMapInteraction has been removed
+  // const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback, mapRef)
+  const onMapClick = useMapClick(clickCallback)
+  // const onMapHover = useMapHover(null, hoverCallback, mapRef)
 
   const globalConfig = useMemo(() => {
     const finalTime = (animated) ? time: debouncedTime
@@ -217,6 +193,7 @@ export default function App() {
   }, [animated, time, debouncedTime])
 
   const { style } = useLayerComposer(layers, globalConfig)
+  // console.log(style)
 
   if (mapRef) {
     mapRef.showTileBoundaries = debug
@@ -232,10 +209,7 @@ export default function App() {
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
       <div className="map">
-        {style && <Map style={style} onMapClick={onMapClick} onMapHover={onMapHover} onSetMapRef={setMapRef}>
-          {hoverTooltipEvent && <HoverPopup event={hoverTooltipEvent} />}
-          {clickedTooltipEvent && <ClickPopup event={clickedTooltipEvent} onClose={closePopup} />}
-        </Map>}
+        {style && <Map style={style} onMapClick={onMapClick}  onSetMapRef={setMapRef} />}
       </div>
       <div className="timebar">
         <TimebarComponent
@@ -251,7 +225,7 @@ export default function App() {
         />
       </div>
       <div className="control-buttons">
-        <Tilesets onChange={(newTilesets, newCombinationMode) => { setSublayers(newTilesets); setCombinationMode(newCombinationMode) }} />
+        <Tilesets onChange={(newTilesets) => { setSublayers(newTilesets); }} />
         <hr />
         <fieldset>
           <input type="checkbox" id="showBasemap" checked={showBasemap} onChange={(e) => {
@@ -279,10 +253,12 @@ export default function App() {
         </fieldset>
 
         <fieldset>
-          <select id="geom" onChange={(event) => { setGeomTypeMode(event.target.value)}}>
-            <option value="gridded">geom:gridded</option>
-            <option value="blob">geom:blob</option>
-            <option value="blobOnPlay">geom:blob on play</option>
+          <select id="mode" onChange={(event) => { setMode(event.target.value)}}>
+            <option value="compare">compare</option>
+            <option value="bivariate">bivariate</option>
+            <option value="blob">blob</option>
+            <option value="blobOnPlay">blob on play</option>
+            <option value="extruded">extruded</option>
           </select>
         </fieldset>
         <hr />

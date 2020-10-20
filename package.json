@@ -49,8 +49,7 @@
   },
   "dependencies": {
     "@babel/runtime": "^7.0.0",
-    "@globalfishingwatch/react-map-gl": "^5.2.7-gfw.3",
-    "@types/react-map-gl": "^5.2.6",
+    "@types/react-map-gl": "^5.2.8",
     "mjolnir.js": "^2.4.0",
     "prop-types": "^15.7.2",
     "resize-observer-polyfill": "^1.5.1",

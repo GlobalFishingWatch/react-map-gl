@@ -89,15 +89,18 @@ const DATAVIEWS = [
   }
 ]
 
+const DEFAULT_TIME = {
+  start: '2017-11-20T00:00:00.000Z',
+  end: '2017-12-20T00:00:00.000Z',
+}
+
 export default function App() {
-  const [time, setTime] = useState({
-    start: '2012-10-01T00:00:00.000Z',
-    end: '2012-11-01T00:00:00.000Z',
-  })
+  const [time, setTime] = useState(DEFAULT_TIME)
+  const [staticTime, setStaticTime] = useState(DEFAULT_TIME)
   const debouncedTime = useDebounce(time, 1000)
 
   const [sublayers, setSublayers] = useState(DEFAULT_SUBLAYERS)
-  const [mode, setMode] = useState('extruded')
+  const [mode, setMode] = useState('compare')
 
   const [showBasemap, setShowBasemap] = useState(true)
   const [animated, setAnimated] = useState(true)
@@ -152,6 +155,8 @@ export default function App() {
           // tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1/datasets',
           tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1',
           interactive: true,
+          staticStart: staticTime.start,
+          staticEnd: staticTime.end,
         })
       } else {
         generators.push({
@@ -168,7 +173,7 @@ export default function App() {
       }
     return generators
   },
-    [animated, showBasemap, debug, debugLabels, sublayers, mode, isPlaying]
+    [animated, showBasemap, debug, debugLabels, sublayers, mode, isPlaying, staticTime]
   );
 
   // console.log(layers)
@@ -217,7 +222,10 @@ export default function App() {
           end={time.end}
           absoluteStart={'2012-01-01T00:00:00.000Z'}
           absoluteEnd={'2020-01-01T00:00:00.000Z'}
-          onChange={(start, end) => {
+          onChange={(start, end, _, __, source) => {
+            if (source !== 'ZOOM_OUT_MOVE') {
+              setStaticTime({start,end})
+            }
             setTime({start,end})
           }}
           enablePlayback

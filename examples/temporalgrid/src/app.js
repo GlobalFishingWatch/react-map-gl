@@ -1,4 +1,4 @@
-/* eslint max-statements: 0 */
+/* eslint max-statements: 0, complexity: 0 */
 import React, {useState, useMemo, useCallback} from 'react';
 import {render} from 'react-dom';
 import { DateTime } from 'luxon'
@@ -14,13 +14,13 @@ export const DEFAULT_SUBLAYERS = [
     // tileset: 'carriers_v8',
     datasets: 'fishing_v4',
     // filter: ''
-    filter: "flag='ESP'",
+    filter: "flag='CHL'",
     active: true
   },
   {
     id: 1,
     datasets: 'fishing_v4',
-    filter: "flag='FRA'",
+    filter: "flag='ARG'",
     active: true
   },
   {
@@ -90,8 +90,8 @@ const DATAVIEWS = [
 ]
 
 const DEFAULT_TIME = {
-  start: '2017-11-20T00:00:00.000Z',
-  end: '2017-12-20T00:00:00.000Z',
+  start: '2018-12-31T00:00:00.000Z',
+  end: '2019-01-31T00:00:00.000Z',
 }
 
 export default function App() {
@@ -115,7 +115,10 @@ export default function App() {
 
   const layers = useMemo(
     () => {
-      const generators = [{...DATAVIEWS.find(dv => dv.id === 'background')}, {...DATAVIEWS.find(dv => dv.id === 'eez')}]
+      const generators = [
+        {...DATAVIEWS.find(dv => dv.id === 'background')},
+        // {...DATAVIEWS.find(dv => dv.id === 'eez')}
+      ]
 
       if (showBasemap) {
         generators.push({...DATAVIEWS.find(dv => dv.id === 'basemap')})
@@ -179,6 +182,12 @@ export default function App() {
   // console.log(layers)
 
   const [mapRef, setMapRef] = useState(null)
+  const globalConfig = useMemo(() => {
+    const finalTime = (animated) ? time: debouncedTime
+    return { ...finalTime }
+  }, [animated, time, debouncedTime])
+
+  const { style } = useLayerComposer(layers, globalConfig)
 
   const clickCallback = useCallback((event) => {
     console.log(event)
@@ -189,16 +198,9 @@ export default function App() {
 
   // TODO useMapInteraction has been removed
   // const { onMapClick, onMapHover } = useMapInteraction(clickCallback, hoverCallback, mapRef)
-  const onMapClick = useMapClick(clickCallback)
-  // const onMapHover = useMapHover(null, hoverCallback, mapRef)
+  const onMapClick = useMapClick(clickCallback, style && style.metadata)
+  const onMapHover = useMapHover(null, hoverCallback, mapRef, null, style && style.metadata)
 
-  const globalConfig = useMemo(() => {
-    const finalTime = (animated) ? time: debouncedTime
-    return { ...finalTime }
-  }, [animated, time, debouncedTime])
-
-  const { style } = useLayerComposer(layers, globalConfig)
-  // console.log(style)
 
   if (mapRef) {
     mapRef.showTileBoundaries = debug
@@ -214,7 +216,7 @@ export default function App() {
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
       <div className="map">
-        {style && <Map style={style} onMapClick={onMapClick}  onSetMapRef={setMapRef} />}
+        {style && <Map style={style} onMapClick={onMapClick} onMapHover={onMapHover} onSetMapRef={setMapRef} />}
       </div>
       <div className="timebar">
         <TimebarComponent

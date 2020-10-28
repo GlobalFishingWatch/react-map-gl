@@ -8,6 +8,7 @@
   <a href="https://npmjs.org/package/react-map-gl">
     <img src="https://img.shields.io/npm/dm/react-map-gl.svg?style=flat-square" alt="downloads" />
   </a>
+  <a href="https://badge.fury.io/js/%40globalfishingwatch%2Freact-map-gl"><img src="https://badge.fury.io/js/%40globalfishingwatch%2Freact-map-gl.svg" alt="npm version" height="18"></a>
 </p>
 
 <h1 align="center">react-map-gl | <a href="https://visgl.github.io/react-map-gl">Docs</a></h1>
@@ -34,7 +35,6 @@ import {Component} from 'react';
 import ReactMapGL from 'react-map-gl';
 
 class Map extends Component {
-
   state = {
     viewport: {
       width: 400,
@@ -49,7 +49,7 @@ class Map extends Component {
     return (
       <ReactMapGL
         {...this.state.viewport}
-        onViewportChange={(viewport) => this.setState({viewport})}
+        onViewportChange={viewport => this.setState({viewport})}
       />
     );
   }
@@ -62,18 +62,16 @@ To show maps from a service such as Mapbox you will need to register on their we
 
 There are several ways to provide a token to your app, as showcased in some of the example folders:
 
-* Provide a `mapboxApiAccessToken` prop to the map component
-* Set the `MapboxAccessToken` environment variable (or set `REACT_APP_MAPBOX_ACCESS_TOKEN` if you are using Create React App)
-* Provide it in the URL, e.g `?access_token=TOKEN`
-* Provide `mapboxApiUrl` prop to the map component to override the default mapbox API URL
+- Provide a `mapboxApiAccessToken` prop to the map component
+- Set the `MapboxAccessToken` environment variable (or set `REACT_APP_MAPBOX_ACCESS_TOKEN` if you are using Create React App)
+- Provide it in the URL, e.g `?access_token=TOKEN`
+- Provide `mapboxApiUrl` prop to the map component to override the default mapbox API URL
 
 But we would recommend using something like [dotenv](https://github.com/motdotla/dotenv) and put your key in an untracked `.env` file, that will then expose it as a `process.env` variable, with much less leaking risks.
-
 
 ### Limitations
 
 This library provides convenient wrappers around initializing and (to some degree) tracking the state of a Mapbox WebGL map. Because most of the functionality of Mapbox's JS API depends on the use of HTML5 canvases and WebGL, which React is not built to manipulate, the React component does not mirror all the functionality of Mapbox GL JS's Map class. You may access the native Mapbox API exposed by the `getMap()` function in this library. However, proceed with caution as calling the native APIs may break the connection between the React layer props and the underlying map state.
-
 
 ### Contribute
 

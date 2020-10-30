@@ -1,12 +1,14 @@
 {
   "scripts": {
     "start": "webpack-dev-server --progress --hot --open",
-    "start-local": "webpack-dev-server --env.local --progress --hot --open",
+    "start-local": "webpack-dev-server --env.local --progress --hot --open --port 3000",
     "build": "webpack"
   },
   "dependencies": {
+    "@globalfishingwatch/api-client": "^1.6.1",
     "@globalfishingwatch/layer-composer": "2.4.4",
     "@globalfishingwatch/react-hooks": "2.5.0",
+    "@globalfishingwatch/react-map-gl": "^5.2.9-gfw.1",
     "@globalfishingwatch/timebar": "1.0.11",
     "babel-polyfill": "^6.26.0",
     "luxon": "^1.24.1",

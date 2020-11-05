@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 import { DEFAULT_SUBLAYERS } from './App';
 
-function Sublayer({ index, sublayer, setDatasets, setFilter, setActive }) {
+function Sublayer({ index, sublayer, setDatasets, setFilter, setActive, setVisible }) {
   return <div className={`tileset ${sublayer.active ? '' : 'disabled'}`}>
     <span>
       {index > 0 && <input type="checkbox" checked={sublayer.active} onChange={(event) => setActive(index, event.target.checked)} />}
@@ -14,6 +14,9 @@ function Sublayer({ index, sublayer, setDatasets, setFilter, setActive }) {
       <label htmlFor={`filters_${index}`}>filters</label>
       <input id={`filters_${index}`} type="text" value={sublayer.filter} onChange={(event) => setFilter(index, event.target.value)} />
     </fieldset>
+    <span>
+      <input type="checkbox" checked={sublayer.visible} onChange={(event) => setVisible(index, event.target.checked)} />
+    </span>
   </div>
 }
 
@@ -35,9 +38,16 @@ export default function Sublayers({ onChange }) {
     newSublayers[index].active = active
     updateSublayers(newSublayers)
   })
+  const setVisible = useCallback((index, visible) => {
+    const newSublayers = [...sublayers]
+    newSublayers[index].visible = visible
+    updateSublayers(newSublayers)
+  })
 
   return <>
-    {sublayers.map((sublayer, i) => <Sublayer key={i} index={i} sublayer={sublayer} setDatasets={setDatasets} setFilter={setFilter} setActive={setActive} />)}
+    {sublayers.map((sublayer, i) => 
+      <Sublayer key={i} index={i} sublayer={sublayer} setDatasets={setDatasets} setFilter={setFilter} setActive={setActive} setVisible={setVisible} />)
+    }
 
     <button onClick={() => onChange(sublayers)}>ok</button>
   </>

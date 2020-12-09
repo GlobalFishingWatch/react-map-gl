@@ -4,6 +4,10 @@ const DOC_TABLE_OF_CONTENTS = require('../docs/table-of-contents.json');
 const ROOT_DIR = resolve('..');
 
 module.exports = {
+  siteMetadata: {
+    title: '',
+    Site: ''
+  },
   plugins: [
     {
       resolve: `gatsby-theme-ocular`,
@@ -15,13 +19,8 @@ module.exports = {
         ROOT_FOLDER: ROOT_DIR,
 
         DOCS: DOC_TABLE_OF_CONTENTS,
-        DOC_FOLDERS: [
-          resolve(ROOT_DIR, 'docs')
-        ],
-        SOURCE: [
-          resolve('./static'),
-          resolve('./src'),
-        ],
+        DOC_FOLDERS: [`${__dirname}/../docs/`],
+        SOURCE: [`${__dirname}/static`],
 
         PROJECT_TYPE: 'github',
 
@@ -33,7 +32,7 @@ module.exports = {
         PROJECT_IMAGE: 'images/hero-sm.jpg',
         PATH_PREFIX: '/react-map-gl',
 
-        GA_TRACKING_ID: 'UA-74374017-2',
+        GA_TRACKING_ID: 'dummy_tracking_id',
 
         // For showing star counts and contributors.
         // Should be like btoa('YourUsername:YourKey') and should be readonly.
@@ -68,10 +67,10 @@ module.exports = {
 
         EXAMPLES: [
           {
-            title: 'Dynamic Styling',
-            image: 'images/example-layers.jpg',
-            componentUrl: resolve(__dirname, '../examples/layers/src/app.js'),
-            path: 'examples/layers'
+            title: 'Temporal grid',
+            image: 'images/temporalgrid.png',
+            componentUrl: resolve(__dirname, '../examples/temporalgrid/src/app.js'),
+            path: 'examples/temporalgrid'
           },
           {
             title: 'Markers & Popups',

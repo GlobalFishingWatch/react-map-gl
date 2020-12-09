@@ -1,1 +1,1 @@
-export {default} from 'mapbox-gl';
+export {default} from '@globalfishingwatch/mapbox-gl';

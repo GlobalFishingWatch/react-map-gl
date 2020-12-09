@@ -1,0 +1,31 @@
+{
+  "scripts": {
+    "start": "webpack-dev-server --progress --hot --open",
+    "start-local": "webpack-dev-server --env.local --progress --hot --open --port 3000",
+    "build": "webpack"
+  },
+  "dependencies": {
+    "@globalfishingwatch/api-client": "^1.6.1",
+    "@globalfishingwatch/layer-composer": "4.2.1",
+    "@globalfishingwatch/react-hooks": "4.1.0",
+    "@globalfishingwatch/react-map-gl": "^5.2.9-gfw.3",
+    "@globalfishingwatch/timebar": "1.1.1",
+    "babel-polyfill": "^6.26.0",
+    "luxon": "^1.24.1",
+    "qs": "^6.9.3",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-map-gl": "^5.2.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/preset-env": "^7.9.0",
+    "@babel/preset-react": "^7.0.0",
+    "@welldone-software/why-did-you-render": "^5.0.0-alpha.2",
+    "babel-loader": "^8.0.0",
+    "webpack": "^4.20.0",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.0"
+  }
+}

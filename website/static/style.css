@@ -149,3 +149,29 @@
 .control-panel .input:hover .tooltip {
   opacity: 1;
 }
+
+body {
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.container {
+  height: calc(100vh - 64px);
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  gap: 1px 1px;
+  grid-template-areas: "map" "timebar";
+  position: relative;
+}
+
+.timebar { grid-area: timebar; }
+
+.map { grid-area: map; height: 100%; }
+
+.control-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: white;
+}

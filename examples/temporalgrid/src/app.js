@@ -205,7 +205,7 @@ export default function App() {
   const {style} = useLayerComposer(layers, globalConfig);
 
   const clickCallback = useCallback(event => {
-    // console.log(event);
+    console.log('clicked', event);
   }, []);
   // const hoverCallback = useCallback(event => {
   //   console.log(event);

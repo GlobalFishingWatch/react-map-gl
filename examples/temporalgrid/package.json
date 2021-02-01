@@ -8,7 +8,7 @@
     "@globalfishingwatch/api-client": "^1.6.1",
     "@globalfishingwatch/layer-composer": "4.2.1",
     "@globalfishingwatch/react-hooks": "4.1.0",
-    "@globalfishingwatch/react-map-gl": "^5.2.9-gfw.8",
+    "@globalfishingwatch/react-map-gl": "^5.2.9-gfw.9",
     "@globalfishingwatch/timebar": "1.1.1",
     "babel-polyfill": "^6.26.0",
     "luxon": "^1.24.1",

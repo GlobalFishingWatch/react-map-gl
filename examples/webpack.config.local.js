@@ -31,8 +31,9 @@ const LOCAL_DEVELOPMENT_CONFIG = {
     alias: {
       // Imports the react-map-gl library from the src directory in this repo
       'react-map-gl': SRC_DIR,
-      './mapboxgl': resolve(LIB_DIR, './node_modules/mapbox-gl/dist/mapbox-gl-dev.js'),
-      '../utils/mapboxgl': resolve(LIB_DIR, './node_modules/mapbox-gl/dist/mapbox-gl-dev.js'),
+      '@globalfishingwatch/react-map-gl': SRC_DIR,
+      './mapboxgl': resolve(LIB_DIR, './node_modules/@globalfishingwatch/mapbox-gl/dist/mapbox-gl-dev.js'),
+      '../utils/mapboxgl': resolve(LIB_DIR, './node_modules/@globalfishingwatch/mapbox-gl/dist/mapbox-gl-dev.js'),
       react: resolve(LIB_DIR, './node_modules/react')
     }
   },

@@ -24,6 +24,7 @@ const {resolve} = require('path');
 const ALIASES = {
   'react-map-gl/test': resolve('./test'),
   'react-map-gl': resolve('./src'),
+  '@globalfishingwatch/react-map-gl': resolve('./src'),
   '@globalfishingwatch/mapbox-gl$': resolve(
     './node_modules/@globalfishingwatch/mapbox-gl/dist/mapbox-gl.js'
   ),

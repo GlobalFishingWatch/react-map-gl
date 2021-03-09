@@ -1,5 +1,7 @@
 /* eslint max-statements: 0, complexity: 0 */
-import React, {useState, useMemo, useCallback} from 'react';
+import React, {useState, useMemo, useCallback, useRef, useEffect} from 'react';
+import MapGL from '@globalfishingwatch/react-map-gl';
+import GFWAPI from '@globalfishingwatch/api-client';
 import {render} from 'react-dom';
 import {DateTime} from 'luxon';
 import {Generators} from '@globalfishingwatch/layer-composer';
@@ -11,16 +13,15 @@ import {
 } from '@globalfishingwatch/react-hooks';
 import TimebarComponent from '@globalfishingwatch/timebar';
 import Tilesets from './tilesets';
-import Map from './map';
 import Login from './login';
 
 export const DEFAULT_SUBLAYERS = [
   {
     id: 0,
     // tileset: 'carriers_v8',
-    datasets: 'fishing_v4',
+    datasets: 'indonesia-fishing:v20200320',
     // filter: ''
-    filter: "flag='ESP'",
+    filter: "",
     active: true,
     visible: true
   },
@@ -28,7 +29,7 @@ export const DEFAULT_SUBLAYERS = [
     id: 1,
     datasets: 'fishing_v4',
     filter: "flag='FRA'",
-    active: true,
+    active: false,
     visible: true
   },
   {
@@ -101,9 +102,26 @@ const DATAVIEWS = [
 ];
 
 const DEFAULT_TIME = {
-  start: '2018-10-31T00:00:00.000Z',
-  end: '2018-11-10T00:00:00.000Z'
+  start: '2017-12-31T00:00:00.000Z',
+  end: '2019-12-30T00:00:00.000Z'
 };
+
+const DEFAULT_VIEWPORT = {
+  latitude: 0.7280085152647603,
+  longitude: 88.24191589210679,
+  zoom: 5.878592313346098
+}
+
+const transformRequest = (url, resourceType) => {
+  const response = {url};
+  if (resourceType === 'Tile' && url.includes('globalfishingwatch')) {
+    response.headers = {
+      Authorization: `Bearer ${GFWAPI.getToken()}`
+    };
+  }
+  return response;
+};
+
 
 export default function App() {
   const [time, setTime] = useState(DEFAULT_TIME);
@@ -122,7 +140,11 @@ export default function App() {
 
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const mapRef = useRef(null);
+  const [mapInstance, setMapInstance] = useState(null)
   const [isLoading, setLoading] = useState(false);
+
+  const [viewport, setViewport] = useState(DEFAULT_VIEWPORT);
 
   const layers = useMemo(
     () => {
@@ -140,7 +162,7 @@ export default function App() {
           const heatmapSublayer = {...DATAVIEWS.find(dv => dv.id === sublayer.id)};
           let colorRamp = heatmapSublayer.colorRamp;
           if (sublayers.filter(t => t.active).length === 1) {
-            colorRamp = 'presence';
+            colorRamp = 'teal';
           } else if (mode === 'bivariate') {
             colorRamp = 'bivariate';
           }
@@ -166,12 +188,9 @@ export default function App() {
           mode: finalMode,
           debug,
           debugLabels,
-          // tilesAPI: 'https://fourwings.api.dev.globalfishingwatch.org/v1'
-          // tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1/datasets',
-          // tilesAPI: ' https://fourwings-tile-server-jzzp2ui3wq-uc.a.run.app/v1',
           interactive: true,
-          staticStart: staticTime.start,
-          staticEnd: staticTime.end
+          // staticStart: staticTime.start,
+          // staticEnd: staticTime.end
         });
       } else {
         generators.push({
@@ -193,13 +212,12 @@ export default function App() {
 
   // console.log(layers)
 
-  const [mapRef, setMapRef] = useState(null);
   const globalConfig = useMemo(
     () => {
       const finalTime = animated ? time : debouncedTime;
-      return {...finalTime};
+      return {...finalTime, zoom: viewport.zoom};
     },
-    [animated, time, debouncedTime]
+    [animated, time, debouncedTime, viewport.zoom]
   );
 
   const {style} = useLayerComposer(layers, globalConfig);
@@ -217,12 +235,21 @@ export default function App() {
   const onMapClick = useMapClick(clickCallback, style && style.metadata);
   // const onMapHover = useMapHover(null, hoverCallback, mapRef, null, style && style.metadata);
 
-  if (mapRef) {
-    mapRef.showTileBoundaries = debug;
-    mapRef.on('idle', () => {
+  useEffect(
+    () => {
+      if (mapRef.current) {
+        setMapInstance(mapRef.current.getMap());
+      }
+    },
+    [mapRef.current]
+  );
+
+  if (mapInstance) {
+    mapInstance.showTileBoundaries = debug;
+    mapInstance.on('idle', () => {
       setLoading(false);
     });
-    mapRef.on('dataloading', () => {
+    mapInstance.on('dataloading', () => {
       setLoading(true);
     });
   }
@@ -232,11 +259,17 @@ export default function App() {
       {isLoading && <div className="loading">loading</div>}
       <div className="map">
         {style && (
-          <Map
-            style={style}
-            onMapClick={onMapClick}
-            // onMapHover={onMapHover}
-            onSetMapRef={setMapRef}
+          <MapGL
+            {...viewport}
+            ref={mapRef}
+            width="100%"
+            height="100%"
+            mapStyle={style}
+            onViewportChange={setViewport}
+            onClick={onMapClick}
+            // onHover={onMapHover}
+            interactiveLayerIds={style.metadata.interactiveLayerIds}
+            transformRequest={transformRequest}
           />
         )}
       </div>

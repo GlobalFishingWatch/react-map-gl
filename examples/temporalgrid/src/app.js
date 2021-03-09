@@ -188,7 +188,7 @@ export default function App() {
           mode: finalMode,
           debug,
           debugLabels,
-          interactive: true,
+          interactive: false,
           // staticStart: staticTime.start,
           // staticEnd: staticTime.end
         });

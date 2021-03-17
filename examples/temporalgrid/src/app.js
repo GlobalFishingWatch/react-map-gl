@@ -27,28 +27,28 @@ export const DEFAULT_SUBLAYERS = [
   },
   {
     id: 1,
-    datasets: 'fishing_v4',
+    datasets: 'fishing_v5',
     filter: "flag='FRA'",
-    active: false,
+    active: true,
     visible: true
   },
   {
     id: 2,
-    datasets: 'fishing_v4',
+    datasets: 'fishing_v5',
     filter: "flag='ITA'",
     active: false,
     visible: true
   },
   {
     id: 3,
-    datasets: 'fishing_v4',
+    datasets: 'fishing_v5',
     filter: "flag='GBR'",
     active: false,
     visible: true
   },
   {
     id: 4,
-    datasets: 'fishing_v4',
+    datasets: 'fishing_v5',
     filter: "flag='PRT'",
     active: false,
     visible: true
@@ -107,9 +107,9 @@ const DEFAULT_TIME = {
 };
 
 const DEFAULT_VIEWPORT = {
-  latitude: 0.7280085152647603,
-  longitude: 88.24191589210679,
-  zoom: 5.878592313346098
+  latitude: 40,
+  longitude: 40,
+  zoom: 2.5
 }
 
 const transformRequest = (url, resourceType) => {
@@ -131,10 +131,11 @@ export default function App() {
   const [sublayers, setSublayers] = useState(DEFAULT_SUBLAYERS);
   const [mode, setMode] = useState('compare');
 
-  const [showBasemap, setShowBasemap] = useState(true);
+  const [showBasemap, setShowBasemap] = useState(false);
   const [animated, setAnimated] = useState(true);
   const [debug, setDebug] = useState(false);
   const [debugLabels, setDebugLabels] = useState(false);
+  const [mergeAsSublayers, setMergeAsSublayers] = useState(true);
 
   const [showInfo, setShowInfo] = useState(false);
 
@@ -148,7 +149,7 @@ export default function App() {
 
   const layers = useMemo(
     () => {
-      const generators = [
+      let generators = [
         {...DATAVIEWS.find(dv => dv.id === 'background')}
         // {...DATAVIEWS.find(dv => dv.id === 'eez')}
       ];
@@ -181,17 +182,33 @@ export default function App() {
           finalMode = isPlaying ? 'blob' : 'compare';
         }
 
-        generators.push({
-          id: 'heatmap-animated',
-          type: Generators.Type.HeatmapAnimated,
-          sublayers: heatmapSublayers,
-          mode: finalMode,
-          debug,
-          debugLabels,
-          interactive: false,
-          // staticStart: staticTime.start,
-          // staticEnd: staticTime.end
-        });
+        if (mergeAsSublayers) {
+          generators.push({
+            id: 'heatmap-animated',
+            type: Generators.Type.HeatmapAnimated,
+            sublayers: heatmapSublayers,
+            mode: finalMode,
+            debug,
+            debugLabels,
+            interactive: false,
+            // staticStart: staticTime.start,
+            // staticEnd: staticTime.end
+          });
+        } else {
+          generators = [
+            ...generators,
+            ...heatmapSublayers.map((sub, i) => ({
+              id: `heatmap-animated-${i}`,
+              type: Generators.Type.HeatmapAnimated,
+              sublayers: [heatmapSublayers[i]],
+              mode: finalMode,
+              debug,
+              debugLabels,
+              interactive: false,
+            }))
+          ]
+        }
+        console.log(generators)
       } else {
         generators.push({
           id: 'heatmap',
@@ -207,10 +224,8 @@ export default function App() {
       }
       return generators;
     },
-    [animated, showBasemap, debug, debugLabels, sublayers, mode, isPlaying, staticTime]
+    [animated, showBasemap, debug, debugLabels, mergeAsSublayers, sublayers, mode, isPlaying, staticTime]
   );
-
-  // console.log(layers)
 
   const globalConfig = useMemo(
     () => {
@@ -254,6 +269,8 @@ export default function App() {
     });
   }
 
+  console.log(style)
+
   return (
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
@@ -292,6 +309,7 @@ export default function App() {
       <div className="control-buttons">
         <Tilesets
           onChange={newTilesets => {
+            console.log(newTilesets)
             setSublayers(newTilesets);
           }}
         />
@@ -339,6 +357,17 @@ export default function App() {
             }}
           />
           <label htmlFor="debugLabels">debugLabels</label>
+        </fieldset>
+        <fieldset>
+          <input
+            type="checkbox"
+            id="mergeAsSublayers"
+            checked={mergeAsSublayers}
+            onChange={e => {
+              setMergeAsSublayers(e.target.checked);
+            }}
+          />
+          <label htmlFor="mergeAsSublayers">merge as sublayers</label>
         </fieldset>
 
         <fieldset>

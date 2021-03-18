@@ -18,25 +18,35 @@ import Login from './login';
 export const DEFAULT_SUBLAYERS = [
   {
     id: 0,
-    // tileset: 'carriers_v8',
-    datasets: 'indonesia-fishing:v20200320',
-    // filter: ''
+    tilesAPI: 
+      'https://dev-api-fourwings-tiler-jzzp2ui3wq-uc.a.run.app/v1',
+    datasets: 'fd-water-temperature-palau',
+    interval: 'month',
     filter: "",
     active: true,
-    visible: true
+    visible: true,
+    // breaks: [20, 22, 24, 26, 27, 28, 29, 30]
+    breaks: [0, .5, 1, 1.5, 2.0, 3, 4, 5],
   },
+  // {
+  //   id: 0,
+  //   datasets: 'fishing_v5',
+  //   filter: "flag='FRA'",
+  //   active: true,
+  //   visible: true
+  // },
   {
     id: 1,
-    datasets: 'fishing_v5',
-    filter: "flag='FRA'",
-    active: true,
+    datasets: 'indonesia-fishing:v20200320',
+    filter: '',
+    active: false,
     visible: true
   },
   {
     id: 2,
     datasets: 'fishing_v5',
     filter: "flag='ESP'",
-    active: true,
+    active: false,
     visible: true
   },
   {
@@ -102,14 +112,14 @@ const DATAVIEWS = [
 ];
 
 const DEFAULT_TIME = {
-  start: '2019-01-01T00:00:00.000Z',
-  end: '2019-02-20T00:00:00.000Z'
+  start: '2018-01-01T00:00:00.000Z',
+  end: '2019-12-31T00:00:00.000Z'
 };
 
 const DEFAULT_VIEWPORT = {
-  latitude: 40,
-  longitude: 40,
-  zoom: 2.5
+  latitude: 6,
+  longitude: 118,
+  zoom: 3
 }
 
 const transformRequest = (url, resourceType) => {
@@ -130,12 +140,13 @@ export default function App() {
 
   const [sublayers, setSublayers] = useState(DEFAULT_SUBLAYERS);
   const [mode, setMode] = useState('compare');
+  const [aggregationOperation, setAggregationOperation] = useState('sum');
 
-  const [showBasemap, setShowBasemap] = useState(false);
+  const [showBasemap, setShowBasemap] = useState(true);
   const [animated, setAnimated] = useState(true);
   const [debug, setDebug] = useState(false);
   const [debugLabels, setDebugLabels] = useState(false);
-  const [mergeAsSublayers, setMergeAsSublayers] = useState(true);
+  const [mergeAsSublayers, setMergeAsSublayers] = useState(false);
 
   const [showInfo, setShowInfo] = useState(false);
 
@@ -168,13 +179,10 @@ export default function App() {
             colorRamp = 'bivariate';
           }
           const finalSublayer = {
-            id: sublayer.id,
+            ...sublayer,
             colorRamp,
             // TODO API should support an array of tilesets for each sublayer
             datasets: sublayer.datasets.split(','),
-            filter: sublayer.filter,
-            visible: sublayer.visible,
-            interval: sublayer.interval
           };
           return finalSublayer
         });
@@ -190,9 +198,10 @@ export default function App() {
             type: Generators.Type.HeatmapAnimated,
             sublayers: heatmapSublayers,
             mode: finalMode,
+            aggregationOperation,
             debug,
             debugLabels,
-            interactive: false,
+            interactive: true,
             // staticStart: staticTime.start,
             // staticEnd: staticTime.end
           });
@@ -203,11 +212,13 @@ export default function App() {
               id: `heatmap-animated-${i}`,
               type: Generators.Type.HeatmapAnimated,
               sublayers: [heatmapSublayers[i]],
-              mode: finalMode,
+              mode: 'single',
+              aggregationOperation,
               debug,
               debugLabels,
-              interactive: false,
-              interval: heatmapSublayers[i].interval
+              interactive: true,
+              interval: heatmapSublayers[i].interval,
+              tilesAPI: heatmapSublayers[i].tilesAPI,
             }))
           ]
         }
@@ -226,7 +237,7 @@ export default function App() {
       }
       return generators;
     },
-    [animated, showBasemap, debug, debugLabels, mergeAsSublayers, sublayers, mode, isPlaying, staticTime]
+    [animated, showBasemap, debug, debugLabels, mergeAsSublayers, sublayers, mode, aggregationOperation, isPlaying, staticTime]
   );
 
   const globalConfig = useMemo(
@@ -283,7 +294,7 @@ export default function App() {
             height="100%"
             mapStyle={style}
             onViewportChange={setViewport}
-            onClick={onMapClick}
+            onClick={e => { console.log(e) }}
             // onHover={onMapHover}
             interactiveLayerIds={style.metadata.interactiveLayerIds}
             transformRequest={transformRequest}
@@ -371,6 +382,7 @@ export default function App() {
         </fieldset>
 
         <fieldset>
+          <label htmlFor="mode">mode</label>
           <select
             id="mode"
             onChange={event => {
@@ -382,6 +394,18 @@ export default function App() {
             <option value="blob">blob</option>
             <option value="blobOnPlay">blob on play</option>
             <option value="extruded">extruded</option>
+          </select>
+        </fieldset>
+        <fieldset>
+          <label htmlFor="aggregationOperation">agg</label>
+          <select
+            id="aggregationOperation"
+            onChange={event => {
+              setAggregationOperation(event.target.value);
+            }}
+          >
+            <option value="sum">sum</option>
+            <option value="avg">avg</option>
           </select>
         </fieldset>
         <hr />

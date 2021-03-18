@@ -1,7 +1,7 @@
 import React, {useState, useCallback} from 'react';
 import {DEFAULT_SUBLAYERS} from './App';
 
-function Sublayer({index, sublayer, setDatasets, setFilter, setActive, setVisible}) {
+function Sublayer({index, sublayer, setDatasets, setFilter, setActive, setVisible, setInterval, allowIntervalChange}) {
   return (
     <div className={`tileset ${sublayer.active ? '' : 'disabled'}`}>
       <span>
@@ -31,18 +31,36 @@ function Sublayer({index, sublayer, setDatasets, setFilter, setActive, setVisibl
           onChange={event => setFilter(index, event.target.value)}
         />
       </fieldset>
-      <span>
+      <fieldset>
+        <label htmlFor={`visible_${index}`}>v</label>
         <input
+          id={`visible_${index}`}
           type="checkbox"
           checked={sublayer.visible}
           onChange={event => setVisible(index, event.target.checked)}
         />
-      </span>
+      </fieldset>
+      <fieldset>
+        <label htmlFor={`interval_${index}`}>interval</label>
+        <select
+          id={`interval_${index}`}
+          onChange={event => {
+            setInterval(index, event.target.value);
+          }}
+          disabled={!allowIntervalChange}
+        >
+          <option value="auto">auto</option>
+          <option value="month">month</option>
+          <option value="10days">10days</option>
+          <option value="day">day</option>
+          <option value="hour">hour</option>
+        </select>
+      </fieldset>
     </div>
   );
 }
 
-export default function Sublayers({onChange}) {
+export default function Sublayers({onChange, allowIntervalChange}) {
   const [sublayers, updateSublayers] = useState(DEFAULT_SUBLAYERS);
 
   const setDatasets = useCallback((index, datasets) => {
@@ -65,6 +83,11 @@ export default function Sublayers({onChange}) {
     newSublayers[index].visible = visible;
     updateSublayers(newSublayers);
   });
+  const setInterval = useCallback((index, interval) => {
+    const newSublayers = [...sublayers];
+    newSublayers[index].interval = interval;
+    updateSublayers(newSublayers);
+  });
 
   return (
     <>
@@ -77,6 +100,8 @@ export default function Sublayers({onChange}) {
           setFilter={setFilter}
           setActive={setActive}
           setVisible={setVisible}
+          setInterval={setInterval}
+          allowIntervalChange={allowIntervalChange}
         />
       ))}
 

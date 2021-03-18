@@ -35,8 +35,8 @@ export const DEFAULT_SUBLAYERS = [
   {
     id: 2,
     datasets: 'fishing_v5',
-    filter: "flag='ITA'",
-    active: false,
+    filter: "flag='ESP'",
+    active: true,
     visible: true
   },
   {
@@ -102,8 +102,8 @@ const DATAVIEWS = [
 ];
 
 const DEFAULT_TIME = {
-  start: '2017-12-31T00:00:00.000Z',
-  end: '2019-12-30T00:00:00.000Z'
+  start: '2019-01-01T00:00:00.000Z',
+  end: '2019-02-20T00:00:00.000Z'
 };
 
 const DEFAULT_VIEWPORT = {
@@ -167,14 +167,16 @@ export default function App() {
           } else if (mode === 'bivariate') {
             colorRamp = 'bivariate';
           }
-          return {
+          const finalSublayer = {
             id: sublayer.id,
             colorRamp,
             // TODO API should support an array of tilesets for each sublayer
             datasets: sublayer.datasets.split(','),
             filter: sublayer.filter,
-            visible: sublayer.visible
+            visible: sublayer.visible,
+            interval: sublayer.interval
           };
+          return finalSublayer
         });
 
         let finalMode = mode;
@@ -205,10 +207,10 @@ export default function App() {
               debug,
               debugLabels,
               interactive: false,
+              interval: heatmapSublayers[i].interval
             }))
           ]
         }
-        console.log(generators)
       } else {
         generators.push({
           id: 'heatmap',
@@ -269,8 +271,6 @@ export default function App() {
     });
   }
 
-  console.log(style)
-
   return (
     <div className="container">
       {isLoading && <div className="loading">loading</div>}
@@ -309,9 +309,9 @@ export default function App() {
       <div className="control-buttons">
         <Tilesets
           onChange={newTilesets => {
-            console.log(newTilesets)
             setSublayers(newTilesets);
           }}
+          allowIntervalChange={!mergeAsSublayers}
         />
         <hr />
         <fieldset>

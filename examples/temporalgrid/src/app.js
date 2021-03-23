@@ -25,8 +25,8 @@ export const DEFAULT_SUBLAYERS = [
     filter: "",
     active: true,
     visible: true,
-    // breaks: [20, 22, 24, 26, 27, 28, 29, 30]
-    breaks: [0, .5, 1, 1.5, 2.0, 3, 4, 5],
+    breaks: [28, 28.2, 28.4, 28.6, 28.8, 29, 29.2, 29.4],
+    breaksMultiplier: 1
   },
   // {
   //   id: 0,
@@ -116,10 +116,15 @@ const DEFAULT_TIME = {
   end: '2019-12-31T00:00:00.000Z'
 };
 
+const STATIC_TIME = {
+  start: '2018-01-01T00:00:00.000Z',
+  end: '2020-12-31T00:00:00.000Z'
+};
+
 const DEFAULT_VIEWPORT = {
   latitude: 6,
   longitude: 118,
-  zoom: 3
+  zoom: 5
 }
 
 const transformRequest = (url, resourceType) => {
@@ -135,14 +140,14 @@ const transformRequest = (url, resourceType) => {
 
 export default function App() {
   const [time, setTime] = useState(DEFAULT_TIME);
-  const [staticTime, setStaticTime] = useState(DEFAULT_TIME);
+  const [staticTime, setStaticTime] = useState(STATIC_TIME);
   const debouncedTime = useDebounce(time, 1000);
 
   const [sublayers, setSublayers] = useState(DEFAULT_SUBLAYERS);
   const [mode, setMode] = useState('compare');
-  const [aggregationOperation, setAggregationOperation] = useState('sum');
+  const [aggregationOperation, setAggregationOperation] = useState('avg');
 
-  const [showBasemap, setShowBasemap] = useState(true);
+  const [showBasemap, setShowBasemap] = useState(false);
   const [animated, setAnimated] = useState(true);
   const [debug, setDebug] = useState(false);
   const [debugLabels, setDebugLabels] = useState(false);
@@ -202,8 +207,6 @@ export default function App() {
             debug,
             debugLabels,
             interactive: true,
-            // staticStart: staticTime.start,
-            // staticEnd: staticTime.end
           });
         } else {
           generators = [
@@ -219,6 +222,7 @@ export default function App() {
               interactive: true,
               interval: heatmapSublayers[i].interval,
               tilesAPI: heatmapSublayers[i].tilesAPI,
+              breaksMultiplier: heatmapSublayers[i].breaksMultiplier,
             }))
           ]
         }
@@ -294,7 +298,7 @@ export default function App() {
             height="100%"
             mapStyle={style}
             onViewportChange={setViewport}
-            onClick={e => { console.log(e) }}
+            onClick={e => { console.log(e.features) }}
             // onHover={onMapHover}
             interactiveLayerIds={style.metadata.interactiveLayerIds}
             transformRequest={transformRequest}
@@ -305,8 +309,8 @@ export default function App() {
         <TimebarComponent
           start={time.start}
           end={time.end}
-          absoluteStart={'2012-01-01T00:00:00.000Z'}
-          absoluteEnd={'2020-01-01T00:00:00.000Z'}
+          absoluteStart={staticTime.start}
+          absoluteEnd={staticTime.end}
           onChange={event => {
             if (event.source !== 'ZOOM_OUT_MOVE') {
               setStaticTime({start: event.start, end: event.end});
@@ -404,8 +408,8 @@ export default function App() {
               setAggregationOperation(event.target.value);
             }}
           >
-            <option value="sum">sum</option>
             <option value="avg">avg</option>
+            <option value="sum">sum</option>
           </select>
         </fieldset>
         <hr />

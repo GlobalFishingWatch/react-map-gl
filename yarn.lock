@@ -1029,17 +1029,17 @@
     unique-filename "^1.1.1"
     which "^1.3.1"
 
-"@globalfishingwatch/fourwings-aggregate@2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@globalfishingwatch/fourwings-aggregate/-/fourwings-aggregate-2.0.0.tgz#ded6ab4e2d885ff0db4d80bb675c50c410899dee"
-  integrity sha512-PdL9hOLVvYKbI/XrCOuECjIERRmYwxgFLLfJanCHU11QVdRvKa7vK997QO8b1/xtfCWJUOQmZTvM6swiJvSiEw==
+"@globalfishingwatch/fourwings-aggregate@4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@globalfishingwatch/fourwings-aggregate/-/fourwings-aggregate-4.0.1.tgz#23069e8c59b389d5597a62c07a2010594b3775cc"
+  integrity sha512-XuW8ieyLihfUJMI518eCM0QhvgxU6SS6GqWyiAqO4QPHcn7Euo8W8atB1rK108KQ4IJsW0HICKgdtZaIvLIeaA==
 
-"@globalfishingwatch/mapbox-gl@1.12.0-gfw.20":
-  version "1.12.0-gfw.20"
-  resolved "https://registry.yarnpkg.com/@globalfishingwatch/mapbox-gl/-/mapbox-gl-1.12.0-gfw.20.tgz#383ab04f3ddd86c85a953a48d99f501ae3e1c26c"
-  integrity sha512-af7KmaA+fbsyNcsk0d0arve2eh8f6pP14BoeXxKmNlOeI+uuogNt1bGa2SwnoPioobm+ThLfK/F3J71+SY2KQQ==
+"@globalfishingwatch/mapbox-gl@1.12.0-gfw.24":
+  version "1.12.0-gfw.24"
+  resolved "https://registry.yarnpkg.com/@globalfishingwatch/mapbox-gl/-/mapbox-gl-1.12.0-gfw.24.tgz#3ee1cc9d8bf3162830e923a00dd8f5bece418c09"
+  integrity sha512-UJHup4ZuaV1ZYV9DBRUHYuPoW/4+tZtjxKE6Tdc/tr8r938RoRFSPuNAcXhqojSECm8iDzA6OKTqh6f5uNCXcQ==
   dependencies:
-    "@globalfishingwatch/fourwings-aggregate" "2.0.0"
+    "@globalfishingwatch/fourwings-aggregate" "4.0.1"
     "@mapbox/geojson-rewind" "^0.5.0"
     "@mapbox/geojson-types" "^1.0.2"
     "@mapbox/jsonlint-lines-primitives" "^2.0.2"
